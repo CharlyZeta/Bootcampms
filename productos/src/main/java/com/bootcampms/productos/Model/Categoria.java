@@ -1,0 +1,23 @@
+package com.bootcampms.productos.Model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "categorias")
+@Data // Genera getters, setters, toString, equals, hashCode
+@NoArgsConstructor // Genera constructor sin argumentos
+@AllArgsConstructor // Genera constructor con todos los argumentos
+public class Categoria {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String nombre;
+
+    private String descripcion; // Opcional
+}
