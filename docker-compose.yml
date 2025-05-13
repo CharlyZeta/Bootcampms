@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Servicio de Productos
+  productos-service:
+    build:
+      context: ./productos
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:productosdb
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - bootcamp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio de Inventario
+  inventario-service:
+    build:
+      context: ./inventario
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:inventariodb
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_PROFILES_ACTIVE=dev
+      - MICROSERVICE_PRODUCTOS_URL=http://productos-service:8080/api/v1/productos
+    networks:
+      - bootcamp-network
+    depends_on:
+      productos-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  bootcamp-network:
+    driver: bridge 
