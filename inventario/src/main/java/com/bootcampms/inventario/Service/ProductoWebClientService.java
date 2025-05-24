@@ -1,60 +1,73 @@
+// D:/SpringProyects/BootCampMS2025/inventario/src/main/java/com/bootcampms/inventario/Service/ProductoWebClientService.java
 package com.bootcampms.inventario.Service;
 
 import com.bootcampms.inventario.Exception.ProductoNoEncontradoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value; // Para inyectar la URL
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+// Ya no se necesitan imports de WebClient ni de Reactor
 
 @Service
-public class ProductoWebClientService {
+public class ProductoWebClientService { // Puedes considerar renombrar a ProductoRestTemplateService
+
+    private static final Logger log = LoggerFactory.getLogger(ProductoWebClientService.class);
+
+    private final RestTemplate restTemplate;
+    private final String productosApiUrlValue; // Nombre diferente para evitar confusión con el campo de WebClientConfig
 
     @Autowired
-    private WebClient webClient; // Asegúrate que este WebClient está configurado en WebClientConfig.java
-
-    /**
-     * Valida si un producto existe en el microservicio de productos de forma reactiva.
-     * @param productoId ID del producto a validar
-     * @return Mono<Boolean> que emite true si el producto existe, o un error si no existe o hay problemas de comunicación.
-     *         O podría ser Mono<Void> si solo quieres que complete exitosamente o falle.
-     */
-    public Mono<Boolean> validarProductoExisteReactivo(Long productoId) {
-        return webClient.get()
-                .uri("/{id}", productoId) // Asumo que la URL base está en la configuración del WebClient
-                .retrieve()
-                .toBodilessEntity() // Solo nos interesa el código de estado
-                .map(response -> response.getStatusCode().is2xxSuccessful())
-                .onErrorMap(WebClientResponseException.NotFound.class,
-                        ex -> new ProductoNoEncontradoException("El producto con ID " + productoId + " no existe en el catálogo."))
-                .onErrorMap(ex -> !(ex instanceof ProductoNoEncontradoException), // Evitar doble envoltura
-                        ex -> new RuntimeException("Error al comunicarse con el servicio de productos para validar ID " + productoId + ": " + ex.getMessage(), ex));
+    public ProductoWebClientService(RestTemplate restTemplate,
+                                    @Value("${microservice.productos.url}") String productosApiUrl) {
+        this.restTemplate = restTemplate;
+        this.productosApiUrlValue = productosApiUrl;
     }
 
-    // Puedes mantener tu método bloqueante si es necesario temporalmente para el bootcamp,
-    // pero es bueno saber cómo sería la versión reactiva.
-    // Si lo mantienes, el servicio que lo llama (InventarioServiceImpl) tendrá que manejar el bloqueo.
+    // El método validarProductoExisteReactivo ya no es necesario y se puede eliminar.
+
     public boolean validarProductoExisteBloqueante(Long productoId) {
+        log.debug("BLOQUEANTE (RestTemplate): Validando existencia del producto ID: {} en el servicio de productos.", productoId);
+        String url = productosApiUrlValue + "/" + productoId; // Construir la URL completa
+
         try {
-            // Esta es tu implementación original
-            return webClient.get()
-                    .uri("/{id}", productoId)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .map(response -> response.getStatusCode().is2xxSuccessful())
-                    .onErrorMap(WebClientResponseException.NotFound.class,
-                            ex -> new ProductoNoEncontradoException("El producto con ID " + productoId + " no existe en el catálogo"))
-                    .onErrorMap(Exception.class, // Cuidado con este catch-all si el anterior ya mapeó a ProductoNoEncontradoException
-                            ex -> new RuntimeException("Error al comunicarse con el servicio de productos: " + ex.getMessage(), ex))
-                    .blockOptional() // Usar blockOptional para manejar mejor el caso de no respuesta
-                    .orElse(false); // O manejar la ausencia de valor de otra forma
-        } catch (ProductoNoEncontradoException pnee) {
-            throw pnee; // Relanzar la excepción específica
-        }
-        catch (Exception ex) {
-            // El onErrorMap ya debería haber transformado la excepción.
-            // Si llegas aquí, es probable que block() haya lanzado algo inesperado.
-            throw new RuntimeException("Error crítico al comunicarse con el servicio de productos: " + ex.getMessage(), ex);
+            // Usamos exchange para tener más control y poder verificar el status code.
+            // Si solo nos interesa el cuerpo y asumimos 200 OK, podríamos usar getForObject.
+            // Para solo verificar existencia, una petición HEAD sería más eficiente, pero GET es más común.
+            ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.GET, null, Void.class);
+
+            // Si llegamos aquí, la respuesta fue exitosa (2xx)
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.debug("Producto ID: {} validado exitosamente (HTTP {}).", productoId, response.getStatusCode());
+                return true;
+            } else {
+                // Esto sería inusual si exchange no lanzó excepción para códigos no-2xx
+                log.warn("Producto ID: {} respondió con HTTP {} pero no fue 2xx y no lanzó excepción.", productoId, response.getStatusCode());
+                return false; // O manejar como un error
+            }
+        } catch (HttpClientErrorException ex) { // Errores 4xx
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+                log.warn("Producto ID: {} no encontrado en el servicio de productos (HTTP 404).", productoId);
+                throw new ProductoNoEncontradoException("El producto con ID " + productoId + " no existe en el catálogo.");
+            }
+            log.error("Error de cliente HTTP ({}) al validar producto ID {}: {}", ex.getStatusCode(), productoId, ex.getResponseBodyAsString(), ex);
+            throw new RuntimeException("Error de respuesta del cliente ("+ ex.getStatusCode() +") al comunicarse con el servicio de productos para validar ID " + productoId, ex);
+        } catch (HttpServerErrorException ex) { // Errores 5xx
+            log.error("Error de servidor HTTP ({}) al validar producto ID {}: {}", ex.getStatusCode(), productoId, ex.getResponseBodyAsString(), ex);
+            throw new RuntimeException("Error de respuesta del servidor ("+ ex.getStatusCode() +") al comunicarse con el servicio de productos para validar ID " + productoId, ex);
+        } catch (ResourceAccessException ex) { // Errores de red, timeouts de conexión/lectura
+            log.error("Error de conexión/red al validar producto ID {} con el servicio de productos: {}", productoId, ex.getMessage(), ex);
+            throw new RuntimeException("No se pudo conectar con el servicio de productos para validar ID " + productoId, ex);
+        } catch (Exception ex) { // Otros errores inesperados
+            log.error("Error inesperado al validar producto ID {} con el servicio de productos: {}", productoId, ex.getMessage(), ex);
+            throw new RuntimeException("Error inesperado al comunicarse con el servicio de productos para validar ID " + productoId, ex);
         }
     }
 }

@@ -1,30 +1,32 @@
+// D:/SpringProyects/BootCampMS2025/inventario/src/main/java/com/bootcampms/inventario/Controller/InventarioController.java
 package com.bootcampms.inventario.Controller;
 
 import com.bootcampms.inventario.DTO.MovimientoInventarioDTO;
+import com.bootcampms.inventario.Exception.ProductoNoEncontradoException;
+import com.bootcampms.inventario.Exception.StockInsuficienteException;
+import com.bootcampms.inventario.Exception.TipoMovimientoIncorrectoException;
 import com.bootcampms.inventario.Model.MovimientoInventario;
 import com.bootcampms.inventario.Model.StockProducto;
-import com.bootcampms.inventario.Model.TipoMovimiento;
 import com.bootcampms.inventario.Service.InventarioService;
-
 import jakarta.validation.Valid;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux; // Añadido
-import reactor.core.publisher.Mono; // Añadido
 
+import java.nio.charset.StandardCharsets; // Importar StandardCharsets
 import java.time.LocalDateTime;
-import java.util.Arrays;
-// import java.util.List; // Ya no se usa para el tipo de retorno principal
-// import java.util.Optional; // Ya no se usa para el tipo de retorno principal
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/inventario")
 public class InventarioController {
 
     private final InventarioService inventarioService;
+    private static final Logger log = LoggerFactory.getLogger(InventarioController.class);
 
     @Autowired
     public InventarioController(InventarioService inventarioService) {
@@ -33,100 +35,145 @@ public class InventarioController {
 
     // Endpoint para obtener el stock de un producto específico GET /api/v1/inventario/stock/{productoId}
     @GetMapping("/stock/{productoId}")
-    public Mono<ResponseEntity<StockProducto>> obtenerStockProducto(@PathVariable Long productoId) {
+    public ResponseEntity<StockProducto> obtenerStockProducto(@PathVariable Long productoId) {
+        log.debug("Solicitud GET para obtener stock del producto ID: {}", productoId);
         return inventarioService.obtenerStockProducto(productoId)
-                .map(ResponseEntity::ok) // Si se encuentra, devuelve 200 OK con el stock
-                .defaultIfEmpty(ResponseEntity.ok(new StockProducto(productoId,0))); // Si no, devuelve 200 OK con stock 0
-        // Alternativa para 404 si no se encuentra:
-        // .defaultIfEmpty(ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> {
+                    log.warn("No se encontró stock para el producto ID: {}. Lanzando ProductoNoEncontradoException.", productoId);
+                    return new ProductoNoEncontradoException("No se encontró stock para el producto con ID: " + productoId);
+                });
     }
+
 
     // Endpoint para obtener el stock de todos los productos GET /api/v1/inventario/stock
     @GetMapping("/stock")
-    public Flux<StockProducto> obtenerStockTodosProductos() {
-        // WebFlux manejará la serialización del Flux a un array JSON
-        return inventarioService.obtenerStockTodosProductos();
+    public ResponseEntity<List<StockProducto>> obtenerStockTodosProductos() {
+        log.debug("Solicitud GET para obtener stock de todos los productos.");
+        List<StockProducto> stocks = inventarioService.obtenerStockTodosProductos();
+        return ResponseEntity.ok(stocks);
     }
-    // Alternativa si quieres devolver ResponseEntity<Flux<StockProducto>> o ResponseEntity<List<StockProducto>>
-    // public Mono<ResponseEntity<List<StockProducto>>> obtenerStockTodosProductos() {
-    //    return inventarioService.obtenerStockTodosProductos()
-    //            .collectList()
-    //            .map(ResponseEntity::ok);
-    // }
-
 
     // Endpoint para obtener los movimientos de un producto específico GET /api/v1/inventario/movimientos/{productoId}
     @GetMapping("/movimientos/{productoId}")
-    public Flux<MovimientoInventario> obtenerMovimientosPorProducto(@PathVariable Long productoId) {
-        return inventarioService.obtenerMovimientosPorProducto(productoId);
+    public ResponseEntity<List<MovimientoInventario>> obtenerMovimientosPorProducto(@PathVariable Long productoId) {
+        log.debug("Solicitud GET para obtener movimientos del producto ID: {}", productoId);
+        List<MovimientoInventario> movimientos = inventarioService.obtenerMovimientosPorProducto(productoId);
+        return ResponseEntity.ok(movimientos);
     }
-    // Alternativa si quieres devolver ResponseEntity<Flux<MovimientoInventario>> o ResponseEntity<List<MovimientoInventario>>
-    // public Mono<ResponseEntity<List<MovimientoInventario>>> obtenerMovimientosPorProducto(@PathVariable Long productoId) {
-    //    return inventarioService.obtenerMovimientosPorProducto(productoId)
-    //            .collectList()
-    //            .map(ResponseEntity::ok);
-    // }
 
     // Endpoint para registrar un nuevo movimiento de inventario POST /api/v1/inventario/movimientos
     @PostMapping("/movimientos")
-    public Mono<ResponseEntity<MovimientoInventario>> registrarMovimiento(@Valid @RequestBody MovimientoInventarioDTO movimientoDTO) {
+    public ResponseEntity<MovimientoInventario> registrarMovimiento(@Valid @RequestBody MovimientoInventarioDTO movimientoDTO) {
+        log.info("Solicitud POST para registrar movimiento: {}", movimientoDTO);
         MovimientoInventario movimiento = new MovimientoInventario(
-                null,  // id será generado
                 movimientoDTO.getProductoId(),
                 movimientoDTO.getCantidad(),
                 movimientoDTO.getTipoMovimiento(),
                 LocalDateTime.now(),
                 movimientoDTO.getNotas()
         );
-
-        return inventarioService.registrarMovimiento(movimiento)
-                .map(m -> new ResponseEntity<>(m, HttpStatus.CREATED));
+        MovimientoInventario movimientoRegistrado = inventarioService.registrarMovimiento(movimiento);
+        log.info("Movimiento registrado exitosamente: {}", movimientoRegistrado);
+        return new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED);
     }
-
 
     // Endpoint para registrar una entrada de inventario POST /api/v1/inventario/entradas
     @PostMapping("/entradas")
-    public Mono<ResponseEntity<MovimientoInventario>> registrarEntrada(@Valid @RequestBody MovimientoInventarioDTO entradaDTO) {
-        if (!Arrays.asList(TipoMovimiento.ENTRADA_COMPRA, TipoMovimiento.ENTRADA_DEVOLUCION, TipoMovimiento.ENTRADA_AJUSTE)
-                .contains(entradaDTO.getTipoMovimiento())) {
-            // Devolver un error de forma reactiva. Podrías usar un ExceptionHandler global también.
-            return Mono.just(ResponseEntity.badRequest().build());
-            // O lanzar una excepción que tu GlobalExceptionHandler maneje:
-            // return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de movimiento no es de entrada"));
-        }
-
-        return inventarioService.registrarEntrada(
+    public ResponseEntity<MovimientoInventario> registrarEntrada(@Valid @RequestBody MovimientoInventarioDTO entradaDTO) {
+        log.info("Solicitud POST para registrar entrada: {}", entradaDTO);
+        MovimientoInventario movimientoRegistrado = inventarioService.registrarEntrada(
                 entradaDTO.getProductoId(),
                 entradaDTO.getCantidad(),
                 entradaDTO.getTipoMovimiento(),
                 entradaDTO.getNotas()
-        ).map(movimientoRegistrado -> new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED));
+        );
+        log.info("Entrada registrada exitosamente: {}", movimientoRegistrado);
+        return new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED);
     }
+
 
     // Endpoint para registrar una salida de inventario POST /api/v1/inventario/salidas
     @PostMapping("/salidas")
-    public Mono<ResponseEntity<MovimientoInventario>> registrarSalida(@Valid @RequestBody MovimientoInventarioDTO salidaDTO) {
-        if (!Arrays.asList(TipoMovimiento.SALIDA_VENTA, TipoMovimiento.SALIDA_AJUSTE)
-                .contains(salidaDTO.getTipoMovimiento())) {
-            return Mono.just(ResponseEntity.badRequest().build());
-        }
-
-        return inventarioService.registrarSalida(
+    public ResponseEntity<MovimientoInventario> registrarSalida(@Valid @RequestBody MovimientoInventarioDTO salidaDTO) {
+        log.info("Solicitud POST para registrar salida: {}", salidaDTO);
+        MovimientoInventario movimientoRegistrado = inventarioService.registrarSalida(
                 salidaDTO.getProductoId(),
                 salidaDTO.getCantidad(),
                 salidaDTO.getTipoMovimiento(),
                 salidaDTO.getNotas()
-        ).map(movimientoRegistrado -> new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED));
+        );
+        log.info("Salida registrada exitosamente: {}", movimientoRegistrado);
+        return new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED);
     }
 
-    // Endpoint para establecer el stock mediante recuento POST /api/v1/inventario/recuento
-    @PostMapping("/recuento")
-    public Mono<ResponseEntity<MovimientoInventario>> establecerStock(@Valid @RequestBody MovimientoInventarioDTO recuentoDTO) {
-        // El servicio se encarga de establecer el TipoMovimiento a RECUENTO_INVENTARIO
-        return inventarioService.establecerStock(
+    // Endpoint para establecer el stock mediante recuento POST /api/v1/inventario/ajuste-stock
+    @PostMapping("/ajuste-stock")
+    public ResponseEntity<MovimientoInventario> establecerStock(@Valid @RequestBody MovimientoInventarioDTO recuentoDTO) {
+        log.info("Solicitud POST para ajustar stock: {}", recuentoDTO);
+        MovimientoInventario movimientoRegistrado = inventarioService.establecerStock(
                 recuentoDTO.getProductoId(),
-                recuentoDTO.getCantidad(), // La cantidad para el recuento
+                recuentoDTO.getCantidad(),
                 recuentoDTO.getNotas()
-        ).map(movimientoRegistrado -> new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED));
+        );
+        log.info("Ajuste de stock registrado exitosamente: {}", movimientoRegistrado);
+        return new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED);
+    }
+
+    // Manejadores de excepciones específicos
+    @ExceptionHandler(ProductoNoEncontradoException.class)
+    public ResponseEntity<String> handleProductoNoEncontrado(ProductoNoEncontradoException ex) {
+        log.warn("Manejando ProductoNoEncontradoException: {}", ex.getMessage());
+        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(textPlainUtf8)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<String> handleStockInsuficiente(StockInsuficienteException ex) {
+        log.warn("Manejando StockInsuficienteException: {}", ex.getMessage());
+        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(textPlainUtf8)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TipoMovimientoIncorrectoException.class)
+    public ResponseEntity<String> handleTipoMovimientoIncorrecto(TipoMovimientoIncorrectoException ex) {
+        log.warn("Manejando TipoMovimientoIncorrectoException: {}", ex.getMessage());
+        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(textPlainUtf8)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Manejando IllegalArgumentException: {}", ex.getMessage());
+        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(textPlainUtf8)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGenericException(Exception ex) {
+        log.error("MANEJADOR GENÉRICO: Excepción no controlada capturada: ", ex);
+        String mensajeError = "Error interno del servidor: ";
+        if (ex.getCause() != null) {
+            mensajeError += ex.getCause().getMessage();
+        } else {
+            mensajeError += ex.getMessage();
+        }
+        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(textPlainUtf8)
+                .body(mensajeError);
     }
 }

@@ -1,3 +1,4 @@
+// D:/SpringProyects/BootCampMS2025/inventario/src/test/java/com/bootcampms/inventario/Service/InventarioServiceImplTest.java
 package com.bootcampms.inventario.Service;
 
 import com.bootcampms.inventario.Exception.ProductoNoEncontradoException;
@@ -15,13 +16,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier; // Asegúrate de que esta importación sea correcta
+// Ya no se necesitan reactor.core.publisher.Flux, Mono, ni reactor.test.StepVerifier
 
 import java.time.LocalDateTime;
+import java.util.List; // Para colecciones
+import java.util.Optional; // Para resultados opcionales
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows; // Para assertThrows
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,9 +37,9 @@ class InventarioServiceImplTest {
     private MovimientoInventarioRepository movimientoRepository;
 
     @Mock
-    private ProductoWebClientService productoValidationService; // Mock para el servicio de validación de producto
+    private ProductoWebClientService productoValidationService;
 
-    @InjectMocks // Crea una instancia de InventarioServiceImpl e inyecta los mocks
+    @InjectMocks
     private InventarioServiceImpl inventarioService;
 
     private StockProducto stockExistente;
@@ -50,10 +52,10 @@ class InventarioServiceImplTest {
     @BeforeEach
     void setUp() {
         stockExistente = new StockProducto(productoIdExistente, 100);
-        stockExistente.setNewEntity(false); // Simula que ya existe en BD
+        // Ya no es necesario stockExistente.setNewEntity(false);
 
         movimientoEntradaEjemplo = new MovimientoInventario(
-                null,
+                null, // El ID se genera al guardar
                 productoIdExistente,
                 10,
                 TipoMovimiento.ENTRADA_COMPRA,
@@ -62,170 +64,122 @@ class InventarioServiceImplTest {
         );
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#obtenerStockProducto(Long)}.
-     * Verifica que cuando el stock del producto existe en el repositorio,
-     * el servicio lo retorna correctamente.
-     */
     @Test
     void obtenerStockProducto_cuandoExiste_deberiaRetornarStock() {
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
 
-        StepVerifier.create(inventarioService.obtenerStockProducto(productoIdExistente))
-                .expectNext(stockExistente)
-                .verifyComplete();
+        Optional<StockProducto> resultado = inventarioService.obtenerStockProducto(productoIdExistente);
+
+        assertThat(resultado).isPresent();
+        assertThat(resultado.get()).isEqualTo(stockExistente);
         verify(stockRepository).findByProductoId(productoIdExistente);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#obtenerStockProducto(Long)}.
-     * Verifica que cuando el stock del producto no existe en el repositorio,
-     * el servicio retorna un Mono vacío.
-     */
     @Test
     void obtenerStockProducto_cuandoNoExiste_deberiaRetornarEmpty() {
-        when(stockRepository.findByProductoId(productoIdNuevo)).thenReturn(Mono.empty());
+        when(stockRepository.findByProductoId(productoIdNuevo)).thenReturn(Optional.empty());
 
-        StepVerifier.create(inventarioService.obtenerStockProducto(productoIdNuevo))
-                .verifyComplete();
+        Optional<StockProducto> resultado = inventarioService.obtenerStockProducto(productoIdNuevo);
+
+        assertThat(resultado).isEmpty();
         verify(stockRepository).findByProductoId(productoIdNuevo);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#obtenerStockTodosProductos()}.
-     * Verifica que el servicio retorna un Flux con todos los productos en stock
-     * obtenidos del repositorio.
-     */
     @Test
-    void obtenerStockTodosProductos_deberiaRetornarFluxDeStocks() {
-        StockProducto stock2 = new StockProducto(productoIdNuevo, 50, false);
-        when(stockRepository.findAll()).thenReturn(Flux.just(stockExistente, stock2));
+    void obtenerStockTodosProductos_deberiaRetornarListaDeStocks() {
+        StockProducto stock2 = new StockProducto(productoIdNuevo, 50);
+        when(stockRepository.findAll()).thenReturn(List.of(stockExistente, stock2));
 
-        StepVerifier.create(inventarioService.obtenerStockTodosProductos())
-                .expectNext(stockExistente)
-                .expectNext(stock2)
-                .verifyComplete();
+        List<StockProducto> resultado = inventarioService.obtenerStockTodosProductos();
+
+        assertThat(resultado).containsExactlyInAnyOrder(stockExistente, stock2);
         verify(stockRepository).findAll();
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#obtenerMovimientosPorProducto(Long)}.
-     * Verifica que el servicio retorna un Flux con todos los movimientos
-     * para un producto específico, obtenidos del repositorio.
-     */
     @Test
-    void obtenerMovimientosPorProducto_deberiaRetornarFluxDeMovimientos() {
+    void obtenerMovimientosPorProducto_deberiaRetornarListaDeMovimientos() {
         MovimientoInventario mov2 = new MovimientoInventario(null, productoIdExistente, 5, TipoMovimiento.SALIDA_VENTA, LocalDateTime.now(), "Venta Test");
-        when(movimientoRepository.findByProductoIdOrderByFechaHoraDesc(productoIdExistente)).thenReturn(Flux.just(movimientoEntradaEjemplo, mov2));
+        when(movimientoRepository.findByProductoIdOrderByFechaHoraDesc(productoIdExistente)).thenReturn(List.of(movimientoEntradaEjemplo, mov2));
 
-        StepVerifier.create(inventarioService.obtenerMovimientosPorProducto(productoIdExistente))
-                .expectNext(movimientoEntradaEjemplo)
-                .expectNext(mov2)
-                .verifyComplete();
+        List<MovimientoInventario> resultado = inventarioService.obtenerMovimientosPorProducto(productoIdExistente);
+
+        assertThat(resultado).containsExactly(movimientoEntradaEjemplo, mov2); // El orden importa aquí
         verify(movimientoRepository).findByProductoIdOrderByFechaHoraDesc(productoIdExistente);
     }
 
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: El producto asociado al movimiento no es validado por {@link ProductoWebClientService}.
-     * Resultado esperado: Se lanza {@link ProductoNoEncontradoException}.
-     */
     @Test
-    void registrarMovimiento_cuandoProductoNoEsValidado_deberiaRetornarErrorProductoNoEncontrado() {
+    void registrarMovimiento_cuandoProductoNoEsValidado_deberiaLanzarProductoNoEncontradoException() {
         MovimientoInventario movimiento = new MovimientoInventario(null, productoIdInvalido, 10, TipoMovimiento.ENTRADA_COMPRA, LocalDateTime.now(), "Test");
-        when(productoValidationService.validarProductoExisteReactivo(productoIdInvalido))
-                .thenReturn(Mono.error(new ProductoNoEncontradoException("Producto no validado: " + productoIdInvalido)));
+        // Mockear el servicio bloqueante para que lance la excepción
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdInvalido))
+                .thenThrow(new ProductoNoEncontradoException("Producto no validado: " + productoIdInvalido));
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimiento))
-                .expectError(ProductoNoEncontradoException.class)
-                .verify();
+        assertThrows(ProductoNoEncontradoException.class, () -> {
+            inventarioService.registrarMovimiento(movimiento);
+        });
 
-        verify(productoValidationService).validarProductoExisteReactivo(productoIdInvalido);
+        verify(productoValidationService).validarProductoExisteBloqueante(productoIdInvalido);
         verifyNoInteractions(stockRepository, movimientoRepository);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: El tipo de movimiento en el objeto {@link MovimientoInventario} es nulo.
-     * Resultado esperado: Se lanza {@link IllegalArgumentException}.
-     */
     @Test
-    void registrarMovimiento_cuandoTipoMovimientoEsNulo_deberiaRetornarIllegalArgumentException() {
+    void registrarMovimiento_cuandoTipoMovimientoEsNulo_deberiaLanzarIllegalArgumentException() {
         MovimientoInventario movimiento = new MovimientoInventario(null, productoIdExistente, 10, null, LocalDateTime.now(), "Test");
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimiento))
-                .expectError(IllegalArgumentException.class)
-                .verify();
+        assertThrows(IllegalArgumentException.class, () -> {
+            inventarioService.registrarMovimiento(movimiento);
+        });
         verifyNoInteractions(productoValidationService, stockRepository, movimientoRepository);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: Se registra una entrada válida para un producto cuyo stock no existe previamente.
-     * Resultado esperado: Se crea un nuevo registro de stock, se actualiza su cantidad,
-     * y se guarda el movimiento.
-     */
     @Test
     void registrarMovimiento_entradaValida_stockNoExistente_deberiaCrearStockYGuardarMovimiento() {
         int cantidadEntrada = 20;
         MovimientoInventario movimiento = new MovimientoInventario(null, productoIdNuevo, cantidadEntrada, TipoMovimiento.ENTRADA_COMPRA, LocalDateTime.now(), "Nueva compra");
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(100L, productoIdNuevo, cantidadEntrada, TipoMovimiento.ENTRADA_COMPRA, movimiento.getFechaHora(), "Nueva compra");
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdNuevo)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdNuevo)).thenReturn(Mono.empty());
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdNuevo)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdNuevo)).thenReturn(Optional.empty());
         when(stockRepository.save(any(StockProducto.class))).thenAnswer(invocation -> {
             StockProducto sp = invocation.getArgument(0);
-            return Mono.just(new StockProducto(sp.getProductoId(), sp.getCantidad(), false)); // Simula guardado
+            // En un escenario real, el ID no se asignaría aquí, pero para simular el guardado:
+            return new StockProducto(sp.getProductoId(), sp.getCantidad());
         });
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(100L);
-            return Mono.just(m);
-        });
+        when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(movimientoGuardadoSimulado);
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimiento))
-                .assertNext(movGuardado -> {
-                    assertThat(movGuardado.getId()).isEqualTo(100L);
-                    assertThat(movGuardado.getProductoId()).isEqualTo(productoIdNuevo);
-                    assertThat(movGuardado.getCantidad()).isEqualTo(cantidadEntrada);
-                })
-                .verifyComplete();
+        MovimientoInventario movGuardado = inventarioService.registrarMovimiento(movimiento);
+
+        assertThat(movGuardado.getId()).isEqualTo(100L);
+        assertThat(movGuardado.getProductoId()).isEqualTo(productoIdNuevo);
+        assertThat(movGuardado.getCantidad()).isEqualTo(cantidadEntrada);
 
         ArgumentCaptor<StockProducto> stockCaptor = ArgumentCaptor.forClass(StockProducto.class);
         verify(stockRepository).save(stockCaptor.capture());
         StockProducto stockGuardado = stockCaptor.getValue();
         assertThat(stockGuardado.getProductoId()).isEqualTo(productoIdNuevo);
         assertThat(stockGuardado.getCantidad()).isEqualTo(cantidadEntrada);
-        assertThat(stockGuardado.isNew()).isTrue(); // El StockProducto creado en memoria es nuevo
+        // Ya no tenemos isNew() en StockProducto
 
         verify(movimientoRepository).save(any(MovimientoInventario.class));
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: Se registra una entrada válida para un producto con stock existente.
-     * Resultado esperado: Se actualiza la cantidad del stock existente y se guarda el movimiento.
-     */
     @Test
     void registrarMovimiento_entradaValida_stockExistente_deberiaActualizarStockYGuardarMovimiento() {
         int cantidadEntrada = movimientoEntradaEjemplo.getCantidad();
         int stockInicial = stockExistente.getCantidad();
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(101L, productoIdExistente, cantidadEntrada, TipoMovimiento.ENTRADA_COMPRA, movimientoEntradaEjemplo.getFechaHora(), movimientoEntradaEjemplo.getNotas());
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
-        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(101L);
-            return Mono.just(m);
-        });
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimientoEntradaEjemplo))
-                .assertNext(movGuardado -> {
-                    assertThat(movGuardado.getId()).isEqualTo(101L);
-                    assertThat(movGuardado.getProductoId()).isEqualTo(productoIdExistente);
-                })
-                .verifyComplete();
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
+        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> inv.getArgument(0)); // Devuelve el mismo objeto modificado
+        when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(movimientoGuardadoSimulado);
+
+        MovimientoInventario movGuardado = inventarioService.registrarMovimiento(movimientoEntradaEjemplo);
+
+        assertThat(movGuardado.getId()).isEqualTo(101L);
+        assertThat(movGuardado.getProductoId()).isEqualTo(productoIdExistente);
 
         ArgumentCaptor<StockProducto> stockCaptor = ArgumentCaptor.forClass(StockProducto.class);
         verify(stockRepository).save(stockCaptor.capture());
@@ -234,29 +188,20 @@ class InventarioServiceImplTest {
         verify(movimientoRepository).save(any(MovimientoInventario.class));
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: Se registra una salida válida para un producto con stock suficiente.
-     * Resultado esperado: Se actualiza la cantidad del stock y se guarda el movimiento.
-     */
     @Test
     void registrarMovimiento_salidaValida_stockSuficiente_deberiaActualizarStockYGuardarMovimiento() {
         int cantidadSalida = 5;
         MovimientoInventario movimientoSalida = new MovimientoInventario(null, productoIdExistente, cantidadSalida, TipoMovimiento.SALIDA_VENTA, LocalDateTime.now(), "Venta");
         int stockInicial = stockExistente.getCantidad();
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(102L, productoIdExistente, cantidadSalida, TipoMovimiento.SALIDA_VENTA, movimientoSalida.getFechaHora(), "Venta");
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
-        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(102L);
-            return Mono.just(m);
-        });
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
+        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(movimientoGuardadoSimulado);
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimientoSalida))
-                .assertNext(movGuardado -> assertThat(movGuardado.getId()).isEqualTo(102L))
-                .verifyComplete();
+        MovimientoInventario movGuardado = inventarioService.registrarMovimiento(movimientoSalida);
+        assertThat(movGuardado.getId()).isEqualTo(102L);
 
         ArgumentCaptor<StockProducto> stockCaptor = ArgumentCaptor.forClass(StockProducto.class);
         verify(stockRepository).save(stockCaptor.capture());
@@ -265,55 +210,37 @@ class InventarioServiceImplTest {
         verify(movimientoRepository).save(any(MovimientoInventario.class));
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: Se registra una salida para un producto, pero el stock es insuficiente.
-     * Resultado esperado: Se lanza {@link StockInsuficienteException} y no se modifica el stock
-     * ni se guarda el movimiento.
-     */
     @Test
-    void registrarMovimiento_salidaValida_stockInsuficiente_deberiaRetornarErrorStockInsuficiente() {
+    void registrarMovimiento_salidaValida_stockInsuficiente_deberiaLanzarStockInsuficienteException() {
         int cantidadSalida = stockExistente.getCantidad() + 1; // Más que el stock actual
         MovimientoInventario movimientoSalida = new MovimientoInventario(null, productoIdExistente, cantidadSalida, TipoMovimiento.SALIDA_VENTA, LocalDateTime.now(), "Venta fallida");
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimientoSalida))
-                .expectError(StockInsuficienteException.class)
-                .verify();
+        assertThrows(StockInsuficienteException.class, () -> {
+            inventarioService.registrarMovimiento(movimientoSalida);
+        });
 
         verify(stockRepository, never()).save(any(StockProducto.class));
         verify(movimientoRepository, never()).save(any(MovimientoInventario.class));
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: Se registra un movimiento de tipo {@link TipoMovimiento#RECUENTO_INVENTARIO}
-     * para un producto con stock existente.
-     * Resultado esperado: El stock del producto se actualiza a la cantidad especificada en el movimiento
-     * y se guarda el movimiento de recuento.
-     */
     @Test
     void registrarMovimiento_recuentoInventario_stockExistente_deberiaActualizarStockYGuardarMovimiento() {
         int nuevaCantidadRecuento = 75;
         MovimientoInventario movimientoRecuento = new MovimientoInventario(null, productoIdExistente, nuevaCantidadRecuento, TipoMovimiento.RECUENTO_INVENTARIO, LocalDateTime.now(), "Recuento");
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(103L, productoIdExistente, nuevaCantidadRecuento, TipoMovimiento.RECUENTO_INVENTARIO, movimientoRecuento.getFechaHora(), "Recuento");
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
-        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(103L);
-            return Mono.just(m);
-        });
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
+        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(movimientoGuardadoSimulado);
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimientoRecuento))
-                .assertNext(movGuardado -> {
-                    assertThat(movGuardado.getId()).isEqualTo(103L);
-                    assertThat(movGuardado.getCantidad()).isEqualTo(nuevaCantidadRecuento);
-                })
-                .verifyComplete();
+        MovimientoInventario movGuardado = inventarioService.registrarMovimiento(movimientoRecuento);
+
+        assertThat(movGuardado.getId()).isEqualTo(103L);
+        assertThat(movGuardado.getCantidad()).isEqualTo(nuevaCantidadRecuento);
 
         ArgumentCaptor<StockProducto> stockCaptor = ArgumentCaptor.forClass(StockProducto.class);
         verify(stockRepository).save(stockCaptor.capture());
@@ -325,162 +252,119 @@ class InventarioServiceImplTest {
         assertThat(movimientoCaptor.getValue().getTipoMovimiento()).isEqualTo(TipoMovimiento.RECUENTO_INVENTARIO);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarMovimiento(MovimientoInventario)}.
-     * Escenario: Se registra un movimiento de tipo {@link TipoMovimiento#RECUENTO_INVENTARIO}
-     * para un producto cuyo stock no existe previamente.
-     * Resultado esperado: Se crea un nuevo registro de stock con la cantidad especificada
-     * y se guarda el movimiento de recuento.
-     */
     @Test
     void registrarMovimiento_recuentoInventario_stockNoExistente_deberiaCrearStockYGuardarMovimiento() {
         int nuevaCantidadRecuento = 50;
         MovimientoInventario movimientoRecuento = new MovimientoInventario(null, productoIdNuevo, nuevaCantidadRecuento, TipoMovimiento.RECUENTO_INVENTARIO, LocalDateTime.now(), "Recuento nuevo");
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(104L, productoIdNuevo, nuevaCantidadRecuento, TipoMovimiento.RECUENTO_INVENTARIO, movimientoRecuento.getFechaHora(), "Recuento nuevo");
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdNuevo)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdNuevo)).thenReturn(Mono.empty()); // Stock no existe
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdNuevo)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdNuevo)).thenReturn(Optional.empty()); // Stock no existe
         when(stockRepository.save(any(StockProducto.class))).thenAnswer(invocation -> {
             StockProducto sp = invocation.getArgument(0);
-            return Mono.just(new StockProducto(sp.getProductoId(), sp.getCantidad(), false));
+            return new StockProducto(sp.getProductoId(), sp.getCantidad());
         });
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(104L);
-            return Mono.just(m);
-        });
+        when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(movimientoGuardadoSimulado);
 
-        StepVerifier.create(inventarioService.registrarMovimiento(movimientoRecuento))
-                .assertNext(movGuardado -> {
-                    assertThat(movGuardado.getId()).isEqualTo(104L);
-                    assertThat(movGuardado.getCantidad()).isEqualTo(nuevaCantidadRecuento);
-                })
-                .verifyComplete();
+        MovimientoInventario movGuardado = inventarioService.registrarMovimiento(movimientoRecuento);
+
+        assertThat(movGuardado.getId()).isEqualTo(104L);
+        assertThat(movGuardado.getCantidad()).isEqualTo(nuevaCantidadRecuento);
 
         ArgumentCaptor<StockProducto> stockCaptor = ArgumentCaptor.forClass(StockProducto.class);
         verify(stockRepository).save(stockCaptor.capture());
         StockProducto stockGuardado = stockCaptor.getValue();
         assertThat(stockGuardado.getProductoId()).isEqualTo(productoIdNuevo);
         assertThat(stockGuardado.getCantidad()).isEqualTo(nuevaCantidadRecuento);
-        assertThat(stockGuardado.isNew()).isTrue();
+        // Ya no tenemos isNew()
 
         verify(movimientoRepository).save(any(MovimientoInventario.class));
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarEntrada(Long, int, TipoMovimiento, String)}.
-     * Escenario: Se registra una entrada válida.
-     * Resultado esperado: El método delega correctamente a {@code registrarMovimiento}
-     * y el movimiento de entrada se procesa.
-     */
     @Test
     void registrarEntrada_valida_deberiaLlamarRegistrarMovimientoCorrectamente() {
         int cantidad = 15;
         TipoMovimiento tipo = TipoMovimiento.ENTRADA_DEVOLUCION;
         String notas = "Devolución";
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(105L, productoIdExistente, cantidad, tipo, LocalDateTime.now(), notas); // FechaHora será la del momento de creación
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
-        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(105L);
-            assertThat(m.getProductoId()).isEqualTo(productoIdExistente);
-            assertThat(m.getCantidad()).isEqualTo(cantidad);
-            assertThat(m.getTipoMovimiento()).isEqualTo(tipo);
-            assertThat(m.getNotas()).isEqualTo(notas);
-            assertThat(m.getFechaHora()).isNotNull();
-            return Mono.just(m);
-        });
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
+        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> inv.getArgument(0));
+        // Mockear el save del movimientoRepository para que devuelva el objeto con ID y capture el argumento
+        ArgumentCaptor<MovimientoInventario> movimientoCaptor = ArgumentCaptor.forClass(MovimientoInventario.class);
+        when(movimientoRepository.save(movimientoCaptor.capture())).thenReturn(movimientoGuardadoSimulado);
 
-        StepVerifier.create(inventarioService.registrarEntrada(productoIdExistente, cantidad, tipo, notas))
-                .assertNext(movGuardado -> assertThat(movGuardado.getId()).isEqualTo(105L))
-                .verifyComplete();
 
-        verify(movimientoRepository).save(any(MovimientoInventario.class));
+        MovimientoInventario movGuardado = inventarioService.registrarEntrada(productoIdExistente, cantidad, tipo, notas);
+        assertThat(movGuardado.getId()).isEqualTo(105L);
+
+        MovimientoInventario capturado = movimientoCaptor.getValue();
+        assertThat(capturado.getProductoId()).isEqualTo(productoIdExistente);
+        assertThat(capturado.getCantidad()).isEqualTo(cantidad);
+        assertThat(capturado.getTipoMovimiento()).isEqualTo(tipo);
+        assertThat(capturado.getNotas()).isEqualTo(notas);
+        assertThat(capturado.getFechaHora()).isNotNull(); // FechaHora se establece en el servicio
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarEntrada(Long, int, TipoMovimiento, String)}.
-     * Escenario: Se intenta registrar una entrada con un tipo de movimiento que no es de entrada.
-     * Resultado esperado: Se lanza {@link TipoMovimientoIncorrectoException}.
-     */
     @Test
-    void registrarEntrada_conTipoMovimientoIncorrecto_deberiaRetornarError() {
-        StepVerifier.create(inventarioService.registrarEntrada(productoIdExistente, 10, TipoMovimiento.SALIDA_VENTA, "Error"))
-                .expectError(TipoMovimientoIncorrectoException.class)
-                .verify();
+    void registrarEntrada_conTipoMovimientoIncorrecto_deberiaLanzarTipoMovimientoIncorrectoException() {
+        assertThrows(TipoMovimientoIncorrectoException.class, () -> {
+            inventarioService.registrarEntrada(productoIdExistente, 10, TipoMovimiento.SALIDA_VENTA, "Error");
+        });
         verifyNoInteractions(productoValidationService, stockRepository, movimientoRepository);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarSalida(Long, int, TipoMovimiento, String)}.
-     * Escenario: Se registra una salida válida.
-     * Resultado esperado: El método delega correctamente a {@code registrarMovimiento}
-     * y el movimiento de salida se procesa.
-     */
     @Test
     void registrarSalida_valida_deberiaLlamarRegistrarMovimientoCorrectamente() {
         int cantidad = 7;
         TipoMovimiento tipo = TipoMovimiento.SALIDA_AJUSTE;
         String notas = "Ajuste";
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(106L, productoIdExistente, cantidad, tipo, LocalDateTime.now(), notas);
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente)); // Stock suficiente
-        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(106L);
-            assertThat(m.getProductoId()).isEqualTo(productoIdExistente);
-            assertThat(m.getCantidad()).isEqualTo(cantidad);
-            assertThat(m.getTipoMovimiento()).isEqualTo(tipo);
-            return Mono.just(m);
-        });
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente)); // Stock suficiente
+        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        StepVerifier.create(inventarioService.registrarSalida(productoIdExistente, cantidad, tipo, notas))
-                .assertNext(movGuardado -> assertThat(movGuardado.getId()).isEqualTo(106L))
-                .verifyComplete();
-        verify(movimientoRepository).save(any(MovimientoInventario.class));
+        ArgumentCaptor<MovimientoInventario> movimientoCaptor = ArgumentCaptor.forClass(MovimientoInventario.class);
+        when(movimientoRepository.save(movimientoCaptor.capture())).thenReturn(movimientoGuardadoSimulado);
+
+        MovimientoInventario movGuardado = inventarioService.registrarSalida(productoIdExistente, cantidad, tipo, notas);
+        assertThat(movGuardado.getId()).isEqualTo(106L);
+
+        MovimientoInventario capturado = movimientoCaptor.getValue();
+        assertThat(capturado.getProductoId()).isEqualTo(productoIdExistente);
+        assertThat(capturado.getCantidad()).isEqualTo(cantidad);
+        assertThat(capturado.getTipoMovimiento()).isEqualTo(tipo);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#registrarSalida(Long, int, TipoMovimiento, String)}.
-     * Escenario: Se intenta registrar una salida con un tipo de movimiento que no es de salida.
-     * Resultado esperado: Se lanza {@link TipoMovimientoIncorrectoException}.
-     */
     @Test
-    void registrarSalida_conTipoMovimientoIncorrecto_deberiaRetornarError() {
-        StepVerifier.create(inventarioService.registrarSalida(productoIdExistente, 10, TipoMovimiento.ENTRADA_COMPRA, "Error"))
-                .expectError(TipoMovimientoIncorrectoException.class)
-                .verify();
+    void registrarSalida_conTipoMovimientoIncorrecto_deberiaLanzarTipoMovimientoIncorrectoException() {
+        assertThrows(TipoMovimientoIncorrectoException.class, () -> {
+            inventarioService.registrarSalida(productoIdExistente, 10, TipoMovimiento.ENTRADA_COMPRA, "Error");
+        });
         verifyNoInteractions(productoValidationService, stockRepository, movimientoRepository);
     }
 
-    /**
-     * Prueba {@link InventarioServiceImpl#establecerStock(Long, int, String)}.
-     * Escenario: Se establece un nuevo valor de stock para un producto.
-     * Resultado esperado: El método delega correctamente a {@code registrarMovimiento}
-     * con el tipo {@link TipoMovimiento#RECUENTO_INVENTARIO} y el movimiento se procesa.
-     */
     @Test
     void establecerStock_valido_deberiaLlamarRegistrarMovimientoCorrectamente() {
         int nuevaCantidad = 120;
         String notas = "Recuento fin de mes";
+        MovimientoInventario movimientoGuardadoSimulado = new MovimientoInventario(107L, productoIdExistente, nuevaCantidad, TipoMovimiento.RECUENTO_INVENTARIO, LocalDateTime.now(), notas);
 
-        when(productoValidationService.validarProductoExisteReactivo(productoIdExistente)).thenReturn(Mono.just(true));
-        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Mono.just(stockExistente));
-        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenAnswer(invocation -> {
-            MovimientoInventario m = invocation.getArgument(0);
-            m.setId(107L);
-            assertThat(m.getProductoId()).isEqualTo(productoIdExistente);
-            assertThat(m.getCantidad()).isEqualTo(nuevaCantidad);
-            assertThat(m.getTipoMovimiento()).isEqualTo(TipoMovimiento.RECUENTO_INVENTARIO);
-            return Mono.just(m);
-        });
+        when(productoValidationService.validarProductoExisteBloqueante(productoIdExistente)).thenReturn(true);
+        when(stockRepository.findByProductoId(productoIdExistente)).thenReturn(Optional.of(stockExistente));
+        when(stockRepository.save(any(StockProducto.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        StepVerifier.create(inventarioService.establecerStock(productoIdExistente, nuevaCantidad, notas))
-                .assertNext(movGuardado -> assertThat(movGuardado.getId()).isEqualTo(107L))
-                .verifyComplete();
-        verify(movimientoRepository).save(any(MovimientoInventario.class));
+        ArgumentCaptor<MovimientoInventario> movimientoCaptor = ArgumentCaptor.forClass(MovimientoInventario.class);
+        when(movimientoRepository.save(movimientoCaptor.capture())).thenReturn(movimientoGuardadoSimulado);
+
+        MovimientoInventario movGuardado = inventarioService.establecerStock(productoIdExistente, nuevaCantidad, notas);
+        assertThat(movGuardado.getId()).isEqualTo(107L);
+
+        MovimientoInventario capturado = movimientoCaptor.getValue();
+        assertThat(capturado.getProductoId()).isEqualTo(productoIdExistente);
+        assertThat(capturado.getCantidad()).isEqualTo(nuevaCantidad);
+        assertThat(capturado.getTipoMovimiento()).isEqualTo(TipoMovimiento.RECUENTO_INVENTARIO);
     }
 }
