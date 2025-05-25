@@ -1,30 +1,41 @@
-// D:/SpringProyects/BootCampMS2025/inventario/src/main/java/com/bootcampms/inventario/Model/StockProducto.java
 package com.bootcampms.inventario.Model;
 
-import jakarta.persistence.Entity; // Para JPA
-import jakarta.persistence.Id;     // Para JPA
-import jakarta.persistence.Table; // Para JPA (aunque el nombre coincida, es buena práctica)
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+/**
+ * Entidad que representa el stock actual de un producto específico.
+ * Mapea a la tabla 'stock_producto' en la base de datos.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity // Indica que esta clase es una entidad JPA
-@Table(name = "stock_producto") // Mapea a la tabla 'stock_producto'
+@Entity
+@Table(name = "stock_producto")
+@Schema(description = "Representa el stock actual de un producto en el inventario.")
 public class StockProducto {
 
-    @Id // Indica que este campo es la clave primaria
+    /**
+     * Identificador del producto. Este es el ID del producto proveniente del microservicio de Productos.
+     * Actúa como clave primaria en esta tabla.
+     */
+    @Id
+    @Schema(description = "ID del producto (clave primaria, coincide con el ID del producto en el servicio de Productos).", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long productoId;
 
+    /**
+     * Cantidad actual en stock para este producto.
+     * No puede ser un valor negativo.
+     */
     @NotNull(message = "La cantidad no puede ser nula")
     @Min(value = 0, message = "El stock no puede ser negativo")
+    @Schema(description = "Cantidad actual de unidades en stock para el producto.", example = "100", defaultValue = "0", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidad = 0;
-
-    // El constructor por defecto de Lombok (@NoArgsConstructor) es suficiente.
-    // El constructor con todos los argumentos (@AllArgsConstructor) también es útil.
-    // No necesitamos más la lógica de 'isNewEntity' ni la interfaz Persistable.
 }

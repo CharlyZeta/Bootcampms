@@ -1,0 +1,8 @@
+com.bootcampms.inventario
+com.bootcampms.inventario.Config
+com.bootcampms.inventario.Controller
+com.bootcampms.inventario.DTO
+com.bootcampms.inventario.Exception
+com.bootcampms.inventario.Model
+com.bootcampms.inventario.Repository
+com.bootcampms.inventario.Service

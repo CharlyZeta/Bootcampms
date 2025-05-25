@@ -1,0 +1,8 @@
+com.bootcampms.productos
+com.bootcampms.productos.Config
+com.bootcampms.productos.Controller
+com.bootcampms.productos.DTO
+com.bootcampms.productos.Exception
+com.bootcampms.productos.Model
+com.bootcampms.productos.Repository
+com.bootcampms.productos.Service
