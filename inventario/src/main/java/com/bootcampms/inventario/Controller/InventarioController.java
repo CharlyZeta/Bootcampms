@@ -1,10 +1,7 @@
-// D:/SpringProyects/BootCampMS2025/inventario/src/main/java/com/bootcampms/inventario/Controller/InventarioController.java
 package com.bootcampms.inventario.Controller;
 
 import com.bootcampms.inventario.DTO.MovimientoInventarioDTO;
 import com.bootcampms.inventario.Exception.ProductoNoEncontradoException;
-import com.bootcampms.inventario.Exception.StockInsuficienteException;
-import com.bootcampms.inventario.Exception.TipoMovimientoIncorrectoException;
 import com.bootcampms.inventario.Model.MovimientoInventario;
 import com.bootcampms.inventario.Model.StockProducto;
 import com.bootcampms.inventario.Service.InventarioService;
@@ -13,11 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets; // Importar StandardCharsets
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -120,60 +115,5 @@ public class InventarioController {
         return new ResponseEntity<>(movimientoRegistrado, HttpStatus.CREATED);
     }
 
-    // Manejadores de excepciones específicos
-    @ExceptionHandler(ProductoNoEncontradoException.class)
-    public ResponseEntity<String> handleProductoNoEncontrado(ProductoNoEncontradoException ex) {
-        log.warn("Manejando ProductoNoEncontradoException: {}", ex.getMessage());
-        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .contentType(textPlainUtf8)
-                .body(ex.getMessage());
-    }
 
-    @ExceptionHandler(StockInsuficienteException.class)
-    public ResponseEntity<String> handleStockInsuficiente(StockInsuficienteException ex) {
-        log.warn("Manejando StockInsuficienteException: {}", ex.getMessage());
-        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .contentType(textPlainUtf8)
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(TipoMovimientoIncorrectoException.class)
-    public ResponseEntity<String> handleTipoMovimientoIncorrecto(TipoMovimientoIncorrectoException ex) {
-        log.warn("Manejando TipoMovimientoIncorrectoException: {}", ex.getMessage());
-        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .contentType(textPlainUtf8)
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        log.warn("Manejando IllegalArgumentException: {}", ex.getMessage());
-        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .contentType(textPlainUtf8)
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
-        log.error("MANEJADOR GENÉRICO: Excepción no controlada capturada: ", ex);
-        String mensajeError = "Error interno del servidor: ";
-        if (ex.getCause() != null) {
-            mensajeError += ex.getCause().getMessage();
-        } else {
-            mensajeError += ex.getMessage();
-        }
-        MediaType textPlainUtf8 = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .contentType(textPlainUtf8)
-                .body(mensajeError);
-    }
 }
