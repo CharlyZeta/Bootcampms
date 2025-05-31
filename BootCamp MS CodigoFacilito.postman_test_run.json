@@ -1,0 +1,286 @@
+{
+	"id": "eca60684-c64b-4ab5-9c0d-126965e5f7d6",
+	"name": "BootCamp MS CodigoFacilito",
+	"timestamp": "2025-05-27T11:02:49.622Z",
+	"collection_id": "19130406-b68fb0e8-532e-43c7-bf37-99b5fd6fbac2",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 0,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-05-27T11:02:47.024Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "23d2353d-af7b-4378-bc19-272999e5ea1e",
+			"name": "Todos los productos",
+			"url": "localhost:8080/api/v1/productos",
+			"time": 242,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				242
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "90c9fac4-7730-435b-8e9f-59c5a85339e4",
+			"name": "Ver producto",
+			"url": "localhost:8080/api/v1/productos/2",
+			"time": 26,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				26
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "0958445f-da52-458a-ac96-14abd619d3b7",
+			"name": "Nuevo producto",
+			"url": "localhost:8080/api/v1/productos",
+			"time": 156,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				156
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "3e9f054c-3412-49bc-9d50-432a439350fd",
+			"name": "Actualizar un producto",
+			"url": "localhost:8080/api/v1/productos/3",
+			"time": 39,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				39
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "22eb89dc-156f-43d0-905b-6b220de0e3cb",
+			"name": "Borrar producto",
+			"url": "localhost:8080/api/v1/productos/2",
+			"time": 84,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				84
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "aa0a8658-d3b8-4081-824c-141e99d76610",
+			"name": "Obtener stock de un producto",
+			"url": "localhost:8081/api/v1/inventario/stock/3",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				13
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "47220827-75d9-49c4-8da9-e8aa716fe3bf",
+			"name": "Obtener stock de todos los productos",
+			"url": "localhost:8081/api/v1/inventario/stock",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				7
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "0b444582-848b-4772-8e66-39f311c80e7b",
+			"name": "Obtener movimientos por producto",
+			"url": "localhost:8081/api/v1/inventario/movimientos/1",
+			"time": 9,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				9
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "27d5c174-4d0e-4ff5-8d06-2a796d319bd6",
+			"name": "Registrar movimiento",
+			"url": "localhost:8081/api/v1/inventario/movimientos",
+			"time": 46,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				46
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "25960578-d749-427b-b47b-53bc744957b4",
+			"name": "Registrar entrada",
+			"url": "localhost:8081/api/v1/inventario/entradas",
+			"time": 13,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				13
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "e5c24728-f8c2-4478-8fdf-4b082f07b462",
+			"name": "Registrar salida",
+			"url": "localhost:8081/api/v1/inventario/salidas",
+			"time": 19,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				19
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "8484bab5-df17-40d1-a6be-a0e127945542",
+			"name": "Ajuste de stock",
+			"url": "localhost:8081/api/v1/inventario/ajuste-stock",
+			"time": 18,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				18
+			],
+			"allTests": [
+				{}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 672,
+	"collection": {
+		"requests": [
+			{
+				"id": "23d2353d-af7b-4378-bc19-272999e5ea1e",
+				"method": "GET"
+			},
+			{
+				"id": "90c9fac4-7730-435b-8e9f-59c5a85339e4",
+				"method": "GET"
+			},
+			{
+				"id": "0958445f-da52-458a-ac96-14abd619d3b7",
+				"method": "POST"
+			},
+			{
+				"id": "3e9f054c-3412-49bc-9d50-432a439350fd",
+				"method": "PUT"
+			},
+			{
+				"id": "22eb89dc-156f-43d0-905b-6b220de0e3cb",
+				"method": "DELETE"
+			},
+			{
+				"id": "aa0a8658-d3b8-4081-824c-141e99d76610",
+				"method": "GET"
+			},
+			{
+				"id": "47220827-75d9-49c4-8da9-e8aa716fe3bf",
+				"method": "GET"
+			},
+			{
+				"id": "0b444582-848b-4772-8e66-39f311c80e7b",
+				"method": "GET"
+			},
+			{
+				"id": "27d5c174-4d0e-4ff5-8d06-2a796d319bd6",
+				"method": "POST"
+			},
+			{
+				"id": "25960578-d749-427b-b47b-53bc744957b4",
+				"method": "POST"
+			},
+			{
+				"id": "e5c24728-f8c2-4478-8fdf-4b082f07b462",
+				"method": "POST"
+			},
+			{
+				"id": "8484bab5-df17-40d1-a6be-a0e127945542",
+				"method": "POST"
+			}
+		]
+	}
+}

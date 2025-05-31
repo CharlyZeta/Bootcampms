@@ -96,8 +96,6 @@ El microservicio expone los siguientes endpoints principales bajo el path base `
 *   `PUT /{id}`: Actualiza un producto existente por su ID.
 *   `DELETE /{id}`: Elimina un producto por su ID.
 
-Para una descripción detallada de todos los endpoints, parámetros, cuerpos de solicitud/respuesta y posibles códigos de error, por favor consulta la documentación interactiva de Swagger UI.
-
 ## Prerrequisitos
 
 *   JDK 17 o superior.
@@ -112,9 +110,13 @@ Para una descripción detallada de todos los endpoints, parámetros, cuerpos de 
 
 La documentación detallada del código fuente (Javadoc) ha sido generada para este proyecto. Puedes consultarla para entender la estructura interna de las clases, métodos y sus funcionalidades.
 
-*   **Accede a la documentación Javadoc aquí:** ./JDoc/index.html
+    ./JDoc/index.html
 
 ## Test Result
 Se incluye exportaciones de los test result de controllers y services en sus respectivas carpetas dentro de /test
     
-    
+    ./test/java/com/bootcampms/productos/controller/
+    ./test/java/com/bootcampms/productos/service/
+
+## Colección de Postman (Pública)
+    https://documenter.getpostman.com/view/19130406/2sB2qgeJBM

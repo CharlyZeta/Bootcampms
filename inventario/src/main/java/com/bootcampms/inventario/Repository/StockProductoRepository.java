@@ -1,17 +1,17 @@
 package com.bootcampms.inventario.Repository;
 
 import com.bootcampms.inventario.Model.StockProducto;
-import org.springframework.data.jpa.repository.JpaRepository; // Para Spring Data JPA
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional; // Para los retornos opcionales
+import java.util.Optional;
 
 /**
  * Repositorio para la entidad {@link StockProducto}.
  * Proporciona métodos para interactuar con la tabla 'stock_producto' en la base de datos,
  * incluyendo operaciones CRUD básicas y consultas personalizadas.
  */
-@Repository // Es buena práctica anotar los repositorios, aunque Spring puede detectarlos
+@Repository
 public interface StockProductoRepository extends JpaRepository<StockProducto, Long> {
 
     /**

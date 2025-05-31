@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "categorias")
-@Data // Genera getters, setters, toString, equals, hashCode
-@NoArgsConstructor // Genera constructor sin argumentos
-@AllArgsConstructor // Genera constructor con todos los argumentos
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Categoria {
 
     @Id

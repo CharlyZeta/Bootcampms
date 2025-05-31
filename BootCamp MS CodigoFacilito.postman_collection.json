@@ -1,0 +1,2670 @@
+{
+	"info": {
+		"_postman_id": "b68fb0e8-532e-43c7-bf37-99b5fd6fbac2",
+		"name": "BootCamp MS CodigoFacilito",
+		"description": "## **Colección de Postman para el Microservicio de Productos - Bootcamp MS**\n\nEsta colección contiene una serie de solicitudes preconfiguradas para interactuar con la API del Microservicio de Productos.  \nEl Microservicio de Productos es el encargado de gestionar el catálogo completo de artículos de la plataforma. Proporciona una API REST para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre los productos, así como gestionar sus categorías y estados.\n\n**Funcionalidades Principales Cubiertas:**\n\n- Obtener todos los productos.\n    \n- Obtener un producto específico por su ID.\n    \n- Crear nuevos productos (con validaciones de SKU y código de barras únicos).\n    \n- Actualizar productos existentes.\n    \n- Eliminar productos.\n    \n\nEsta colección está diseñada para facilitar las pruebas y la exploración de la API del microservicio de Productos desarrollado durante el Bootcamp MS. de CodigoFacilito.\n\n## **Colección de Postman para el Microservicio de Inventario - Bootcamp MS**\n\nEsta colección proporciona las solicitudes necesarias para probar e interactuar con la API del Microservicio de Inventario.  \nEl Microservicio de Inventario es responsable de gestionar el stock de los productos y registrar todos los movimientos de entrada y salida. Trabaja en conjunto con el Microservicio de Productos para asegurar la consistencia de los datos.\n\n**Funcionalidades Principales Cubiertas:**\n\n- Registrar movimientos de inventario (entradas por compra, salidas por venta, ajustes, etc.).\n    \n- Consultar el stock actual de un producto específico.\n    \n- Obtener un historial de movimientos para un producto.\n    \n- Validar la existencia de un producto antes de realizar operaciones de inventario.\n    \n\nUtiliza esta colección para probar la lógica de gestión de inventario y la interacción entre los microservicios como parte del Bootcamp MS.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19130406",
+		"_collection_link": "https://gold-capsule-117332.postman.co/workspace/27c0dbed-2bc4-41e6-8782-4db4c9c2b652/collection/19130406-b68fb0e8-532e-43c7-bf37-99b5fd6fbac2?action=share&source=collection_link&creator=19130406"
+	},
+	"item": [
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "Todos los productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array');",
+									"    responseData.forEach(function(product) {",
+									"        pm.expect(product).to.include.all.keys('id', 'sku', 'nombre', 'descripcion', 'precio', 'stock', 'categoria', 'imagenUrl', 'estado');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"SKU is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  responseData.forEach(function(product) {",
+									"    pm.expect(product.sku).to.be.a('string').and.to.have.lengthOf.at.least(1, \"SKU should be a non-empty string\");",
+									"  });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Price should be a non-negative number\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    responseData.forEach(function(product) {",
+									"        pm.expect(product.precio).to.be.a('number');",
+									"        pm.expect(product.precio).to.be.at.least(0);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Category object contains id, nombre, and descripcion properties\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array');",
+									"    responseData.forEach(function(product) {",
+									"        pm.expect(product.categoria).to.be.an('object');",
+									"        pm.expect(product.categoria.id).to.exist;",
+									"        pm.expect(product.categoria.nombre).to.exist;",
+									"        pm.expect(product.categoria.descripcion).to.exist;",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/productos",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"productos"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{workspaceId}}",
+									"description": "Optional. A workspace ID.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Para consultar todos los productos"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"sku\": \"SKU001\",\n        \"nombre\": \"Laptop Pro\",\n        \"descripcion\": \"Laptop de alto rendimiento\",\n        \"precio\": 1200.99,\n        \"precioOferta\": null,\n        \"codBar\": \"1234567890123\",\n        \"stock\": 10,\n        \"categoria\": {\n            \"id\": 1,\n            \"nombre\": \"Electrónica\",\n            \"descripcion\": \"Dispositivos y accesorios electrónicos\"\n        },\n        \"imagenUrl\": \"http://example.com/laptop.jpg\",\n        \"estado\": \"PUBLICADO\"\n    },\n    {\n        \"id\": 3,\n        \"sku\": \"SKU003\",\n        \"nombre\": \"Camiseta Básica\",\n        \"descripcion\": \"Camiseta de algodón\",\n        \"precio\": 19.99,\n        \"precioOferta\": null,\n        \"codBar\": \"3356789012333\",\n        \"stock\": 50,\n        \"categoria\": {\n            \"id\": 2,\n            \"nombre\": \"Ropa\",\n            \"descripcion\": \"Prendas de vestir\"\n        },\n        \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n        \"estado\": \"PUBLICADO\"\n    },\n    {\n        \"id\": 4,\n        \"sku\": \"SKU004\",\n        \"nombre\": \"Taza Café\",\n        \"descripcion\": \"Taza de cerámica\",\n        \"precio\": 9.95,\n        \"precioOferta\": null,\n        \"codBar\": \"4567890123456\",\n        \"stock\": 30,\n        \"categoria\": {\n            \"id\": 3,\n            \"nombre\": \"Hogar\",\n            \"descripcion\": \"Artículos para el hogar\"\n        },\n        \"imagenUrl\": \"http://example.com/mug.jpg\",\n        \"estado\": \"BORRADOR\"\n    },\n    {\n        \"id\": 5,\n        \"sku\": \"SKU006\",\n        \"nombre\": \"Camiseta blanca XXL\",\n        \"descripcion\": \"Camiseta de 100% algodón blanco\",\n        \"precio\": 10.99,\n        \"precioOferta\": null,\n        \"codBar\": \"7345678901555\",\n        \"stock\": 0,\n        \"categoria\": {\n            \"id\": 2,\n            \"nombre\": \"Ropa\",\n            \"descripcion\": \"Prendas de vestir\"\n        },\n        \"imagenUrl\": \"http://example.com/tshirt2BL.jpg\",\n        \"estado\": \"PUBLICADO\"\n    }\n]"
+						},
+						{
+							"name": "Todos los productos",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/productos",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "{{workspaceId}}",
+											"description": "Optional. A workspace ID.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 31 May 2025 21:35:00 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"sku\": \"SKU001\",\n        \"nombre\": \"Laptop Pro\",\n        \"descripcion\": \"Laptop de alto rendimiento\",\n        \"precio\": 1200.99,\n        \"precioOferta\": null,\n        \"codBar\": \"1234567890123\",\n        \"stock\": 10,\n        \"categoria\": {\n            \"id\": 1,\n            \"nombre\": \"Electrónica\",\n            \"descripcion\": \"Dispositivos y accesorios electrónicos\"\n        },\n        \"imagenUrl\": \"http://example.com/laptop.jpg\",\n        \"estado\": \"PUBLICADO\"\n    },\n    {\n        \"id\": 2,\n        \"sku\": \"SKU002\",\n        \"nombre\": \"Teclado Gamer\",\n        \"descripcion\": \"Teclado mecánico RGB\",\n        \"precio\": 75.5,\n        \"precioOferta\": 69.99,\n        \"codBar\": \"2345678901234\",\n        \"stock\": 20,\n        \"categoria\": {\n            \"id\": 1,\n            \"nombre\": \"Electrónica\",\n            \"descripcion\": \"Dispositivos y accesorios electrónicos\"\n        },\n        \"imagenUrl\": \"http://example.com/keyboard.jpg\",\n        \"estado\": \"PUBLICADO\"\n    },\n    {\n        \"id\": 3,\n        \"sku\": \"SKU003\",\n        \"nombre\": \"Camiseta Básica\",\n        \"descripcion\": \"Camiseta de algodón\",\n        \"precio\": 19.99,\n        \"precioOferta\": null,\n        \"codBar\": \"3356789012333\",\n        \"stock\": 50,\n        \"categoria\": {\n            \"id\": 2,\n            \"nombre\": \"Ropa\",\n            \"descripcion\": \"Prendas de vestir\"\n        },\n        \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n        \"estado\": \"PUBLICADO\"\n    },\n    {\n        \"id\": 4,\n        \"sku\": \"SKU004\",\n        \"nombre\": \"Taza Café\",\n        \"descripcion\": \"Taza de cerámica\",\n        \"precio\": 9.95,\n        \"precioOferta\": null,\n        \"codBar\": \"4567890123456\",\n        \"stock\": 30,\n        \"categoria\": {\n            \"id\": 3,\n            \"nombre\": \"Hogar\",\n            \"descripcion\": \"Artículos para el hogar\"\n        },\n        \"imagenUrl\": \"http://example.com/mug.jpg\",\n        \"estado\": \"BORRADOR\"\n    },\n    {\n        \"id\": 6,\n        \"sku\": \"SKU-POSTMAN-001\",\n        \"nombre\": \"Producto Nuevo Desde Postman\",\n        \"descripcion\": \"Descripción detallada de este producto de prueba.\",\n        \"precio\": 199.99,\n        \"precioOferta\": null,\n        \"codBar\": \"9876543210123\",\n        \"stock\": 25,\n        \"categoria\": {\n            \"id\": 1,\n            \"nombre\": \"Electrónica\",\n            \"descripcion\": \"Dispositivos y accesorios electrónicos\"\n        },\n        \"imagenUrl\": \"http://example.com/imagen_postman.jpg\",\n        \"estado\": \"PUBLICADO\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Ver producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/productos/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"productos",
+								"1"
+							],
+							"query": [
+								{
+									"key": "access_key",
+									"value": "{{accessKey}}",
+									"description": "Optional. A collection's read-only access key. Using this query parameter does not require an API key to call the endpoint.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Gets information about a collection. For a complete list of this endpoint's possible values, use the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/productos/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"sku\": \"SKU001\",\n    \"nombre\": \"Laptop Pro\",\n    \"descripcion\": \"Laptop de alto rendimiento\",\n    \"precio\": 1200.99,\n    \"precioOferta\": null,\n    \"codBar\": \"1234567890123\",\n    \"stock\": 10,\n    \"categoria\": {\n        \"id\": 1,\n        \"nombre\": \"Electrónica\",\n        \"descripcion\": \"Dispositivos y accesorios electrónicos\"\n    },\n    \"imagenUrl\": \"http://example.com/laptop.jpg\",\n    \"estado\": \"PUBLICADO\"\n}"
+						},
+						{
+							"name": "Get Collection with Access Token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2?access_key={{accessKey}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									],
+									"query": [
+										{
+											"key": "access_key",
+											"value": "{{accessKey}}"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This is a test collection that makes a tiny request to Postman Echo service to get the list of request headers sent by a HTTP client.\",\n            \"_postman_id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.0.0/collection.json\",\n            \"updatedAt\": \"2022-06-16T20:21:13.000Z\",\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"id\": \"82ee981b-e19f-962a-401e-ea34ebfb4848\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                            ],\n                            \"type\": \"text/javascript\"\n                        }\n                    }\n                ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                },\n                \"response\": []\n            }\n        ]\n    }\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/productos/6",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos",
+										"6"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Producto con ID 6 no encontrado.\",\n    \"timestamp\": \"2025-05-31T18:15:12.9620444\"\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Nuevo producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 201\", function () {",
+									"    pm.expect(pm.response.code).to.equal(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.include.all.keys('id', 'sku', 'nombre', 'descripcion', 'precio', 'categoria', 'imagenUrl', 'estado');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Price is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.precio).to.be.a('number');",
+									"    pm.expect(responseData.precio).to.be.at.least(0, \"Price should be a non-negative integer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Categoria object is present and contains expected properties\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.categoria).to.exist;",
+									"    pm.expect(responseData.categoria.id).to.exist;",
+									"    pm.expect(responseData.categoria.nombre).to.exist;",
+									"    pm.expect(responseData.categoria.descripcion).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Stock is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.stock).to.be.a('number');",
+									"    pm.expect(responseData.stock).to.be.at.least(0, \"Stock should be a non-negative integer\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sku\": \"SKU-POSTMAN-001\",\n    \"nombre\": \"Producto Nuevo Desde Postman\",\n    \"descripcion\": \"Descripción detallada de este producto de prueba.\",\n    \"precio\": 199.99,\n    \"precioOferta\": null, // Puede omitirse o poner un valor, ej: 179.99\n    \"codBar\": \"9876543210123\", // Debe ser único y tener entre 8 y 13 caracteres\n    \"stock\": 25, // El modelo Producto tiene un valor por defecto de 0 si no se envía\n    \"categoria\": {\n        \"id\": 1 // Asegúrate de que una categoría con este ID exista.\n                 // Por ejemplo, la categoría \"Electrónica\" creada por DataInitializer.\n    },\n    \"imagenUrl\": \"http://example.com/imagen_postman.jpg\",\n    \"estado\": \"PUBLICADO\" // Puede ser BORRADOR, PUBLICADO, o PRIVADO\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/productos",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"productos"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{workspaceId}}",
+									"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n*   `info` — An **object** that contains the following properties:\n    *   `name` — A **string** value that contains the collection's name.\n    *   `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n*   `item` — An **object** that contains the HTTP request and response information.\n    *   `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n*   For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    *   `info` object — Use the `definitions.info` entry.\n    *   `item` object — Use the `definitions.items` entry.\n*   For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/v1/productos",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"sku\": \"SKU003\",\n    \"nombre\": \"Camiseta Básica\",\n    \"descripcion\": \"Camiseta de algodón\",\n    \"precio\": 19.99,\n    \"precioOferta\": null,\n    \"codBar\": \"3356789012333\",\n    \"stock\": 50,\n    \"categoria\": {\n        \"id\": 2,\n        \"nombre\": \"Ropa\",\n        \"descripcion\": \"Prendas de vestir\"\n    },\n    \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n    \"estado\": \"PUBLICADO\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.getpostman.com/collections",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"precio\": \"El precio debe ser mayor que cero\",\n    \"sku\": \"El SKU no puede estar vacío\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Actualizar un producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Id is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.id).to.be.a('number');",
+									"    pm.expect(responseData.id).to.be.at.least(0, \"Id should be a non-negative integer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Ensure the categoria object has the required properties\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.categoria).to.be.an('object');",
+									"    pm.expect(responseData.categoria).to.have.property('id');",
+									"    pm.expect(responseData.categoria).to.have.property('nombre');",
+									"    pm.expect(responseData.categoria).to.have.property('descripcion');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Nombre and descripcion must be non-empty strings\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.nombre).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+									"  pm.expect(responseData.descripcion).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"id\": 3,\n        \"sku\": \"SKU003\",\n        \"nombre\": \"Camiseta Básica\",\n        \"descripcion\": \"Camiseta de algodón\",\n        \"precio\": 16.99,\n        \"precioOferta\": null,\n        \"codBar\": \"3356789012333\",\n        \"stock\": 0,\n        \"categoria\": {\n            \"id\": 2,\n            \"nombre\": \"Ropa\",\n            \"descripcion\": \"Prendas de vestir\"\n        },\n        \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n        \"estado\": \"PUBLICADO\"\n    }"
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/productos/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"productos",
+								"3"
+							]
+						},
+						"description": "Updates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n- `info` — An **object** that contains the following properties:\n    - `name` — A **string** value that contains the collection's name.\n    - `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n- `item` — An **object** that contains the HTTP request and response information.\n    - `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n- For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    - `info` object — Use the `definitions.info` entry.\n    - `item` object — Use the `definitions.items` entry.\n- For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json).\n    \n\n### Important\n\nUse caution when using this endpoint. The system will replace the existing collection with the values passed in the request body."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test POST Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"POST\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"sku\": \"SKU003\",\n    \"nombre\": \"Camiseta Básica\",\n    \"descripcion\": \"Camiseta de algodón\",\n    \"precio\": 19.99,\n    \"precioOferta\": null,\n    \"codBar\": \"3356789012333\",\n    \"stock\": 50,\n    \"categoria\": {\n        \"id\": 2,\n        \"nombre\": \"Ropa\",\n        \"descripcion\": \"Prendas de vestir\"\n    },\n    \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n    \"estado\": \"PUBLICADO\"\n}"
+						},
+						{
+							"name": "Actualizar un producto",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n        \"id\": 9,\n        \"sku\": \"SKU009\",\n        \"nombre\": \"Camiseta Básica\",\n        \"descripcion\": \"Camiseta de algodón\",\n        \"precio\": 16.99,\n        \"precioOferta\": null,\n        \"codBar\": \"3356789012333\",\n        \"stock\": 0,\n        \"categoria\": {\n            \"id\": 2,\n            \"nombre\": \"Ropa\",\n            \"descripcion\": \"Prendas de vestir\"\n        },\n        \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n        \"estado\": \"PUBLICADO\"\n    }"
+								},
+								"url": {
+									"raw": "localhost:8080/api/v1/productos/3",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 31 May 2025 21:35:30 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"sku\": \"SKU009\",\n    \"nombre\": \"Camiseta Básica\",\n    \"descripcion\": \"Camiseta de algodón\",\n    \"precio\": 19.99,\n    \"precioOferta\": null,\n    \"codBar\": \"3356789012333\",\n    \"stock\": 50,\n    \"categoria\": {\n        \"id\": 2,\n        \"nombre\": \"Ropa\",\n        \"descripcion\": \"Prendas de vestir\"\n    },\n    \"imagenUrl\": \"http://example.com/tshirt33.jpg\",\n    \"estado\": \"PUBLICADO\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Borrar producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required Content-Type header with value application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate that 'mensaje' field is present in the response\", function () {",
+									"  const responseData = pm.response.json();",
+									"  pm.expect(responseData).to.have.property('mensaje');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Ensure that the 'mensaje' field is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.mensaje).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Verify that the response body is empty if the status code is 204\", function () {",
+									"    pm.expect(pm.response.code).to.equal(204);",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/productos/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"productos",
+								"2"
+							]
+						},
+						"description": "Deletes a collection."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/productos/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos",
+										"2"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"mensaje\": \"Producto con ID 2 eliminado correctamente.\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/productos/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"productos",
+										"2"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Producto con ID 2 no encontrado para eliminar.\",\n    \"timestamp\": \"2025-05-31T18:44:24.2101597\"\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "inventario",
+			"item": [
+				{
+					"name": "Obtener stock de un producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - productoId and cantidad\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.productoId).to.exist;",
+									"    pm.expect(responseData.cantidad).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"ProductoId is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.productoId).to.be.a('number').and.to.satisfy((val) => val >= 0, \"ProductoId must be a non-negative integer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Cantidad is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.cantidad).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.cantidad).to.be.at.least(0, \"Cantidad should be a non-negative integer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/stock/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"stock",
+								"3"
+							]
+						},
+						"description": "Gets information about a collection. For a complete list of this endpoint's possible values, use the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/stock/3",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"stock",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"productoId\": 3,\n    \"cantidad\": 25\n}"
+						},
+						{
+							"name": "Get Collection with Access Token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2?access_key={{accessKey}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									],
+									"query": [
+										{
+											"key": "access_key",
+											"value": "{{accessKey}}"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This is a test collection that makes a tiny request to Postman Echo service to get the list of request headers sent by a HTTP client.\",\n            \"_postman_id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.0.0/collection.json\",\n            \"updatedAt\": \"2022-06-16T20:21:13.000Z\",\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"id\": \"82ee981b-e19f-962a-401e-ea34ebfb4848\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                            ],\n                            \"type\": \"text/javascript\"\n                        }\n                    }\n                ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                },\n                \"response\": []\n            }\n        ]\n    }\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/stock/9",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"stock",
+										"9"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"mensaje\": \"No se encontró stock para el producto con ID: 9\",\n    \"timestamp\": \"2025-05-31T18:48:01.7324031\"\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Obtener stock de todos los productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - productoId and cantidad\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array');",
+									"    responseData.forEach(function(item) {",
+									"        pm.expect(item).to.have.property('productoId');",
+									"        pm.expect(item).to.have.property('cantidad');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate that productoId is a non-negative integer\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('array');",
+									"  responseData.forEach(function(item) {",
+									"    pm.expect(item.productoId).to.be.a('number').greaterThan(-1);",
+									"  });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Cantidad is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array');",
+									"    responseData.forEach(function(item) {",
+									"        pm.expect(item.cantidad).to.be.a('number').and.to.be.at.least(0);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/stock",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"stock"
+							]
+						},
+						"description": "Gets information about a collection. For a complete list of this endpoint's possible values, use the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/stock",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"stock"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"productoId\": 1,\n        \"cantidad\": 99\n    },\n    {\n        \"productoId\": 2,\n        \"cantidad\": 50\n    },\n    {\n        \"productoId\": 3,\n        \"cantidad\": 25\n    }\n]"
+						},
+						{
+							"name": "Get Collection with Access Token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2?access_key={{accessKey}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									],
+									"query": [
+										{
+											"key": "access_key",
+											"value": "{{accessKey}}"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This is a test collection that makes a tiny request to Postman Echo service to get the list of request headers sent by a HTTP client.\",\n            \"_postman_id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.0.0/collection.json\",\n            \"updatedAt\": \"2022-06-16T20:21:13.000Z\",\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"id\": \"82ee981b-e19f-962a-401e-ea34ebfb4848\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                            ],\n                            \"type\": \"text/javascript\"\n                        }\n                    }\n                ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                },\n                \"response\": []\n            }\n        ]\n    }\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"error\": {\n        \"name\": \"instanceNotFoundError\",\n        \"message\": \"We could not find the collection you are looking for\"\n    }\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Obtener movimientos por producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array');",
+									"    ",
+									"    responseData.forEach(function(item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('productoId');",
+									"        pm.expect(item).to.have.property('cantidad');",
+									"        pm.expect(item).to.have.property('tipoMovimiento');",
+									"        pm.expect(item).to.have.property('fechaHora');",
+									"        pm.expect(item).to.have.property('notas');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Date is in a valid date format\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  responseData.forEach(function(item) {",
+									"    pm.expect(item.fechaHora).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);",
+									"  });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Verify that the response Content-Type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Id, productoId, and cantidad are non-negative integers\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array').that.is.not.empty;",
+									"    ",
+									"    responseData.forEach(function(item) {",
+									"        pm.expect(item.id).to.be.a('number').that.is.at.least(0);",
+									"        pm.expect(item.productoId).to.be.a('number').that.is.at.least(0);",
+									"        pm.expect(item.cantidad).to.be.a('number').that.is.at.least(0);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/movimientos/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"movimientos",
+								"1"
+							]
+						},
+						"description": "Gets information about a collection. For a complete list of this endpoint's possible values, use the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/movimientos/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"movimientos",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 7,\n        \"productoId\": 1,\n        \"cantidad\": 1,\n        \"tipoMovimiento\": \"SALIDA_VENTA\",\n        \"fechaHora\": \"2025-05-27T08:04:18.960992\",\n        \"notas\": \"Venta de producto 1\"\n    },\n    {\n        \"id\": 3,\n        \"productoId\": 1,\n        \"cantidad\": 20,\n        \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n        \"fechaHora\": \"2025-05-25T08:03:38.963818\",\n        \"notas\": \"Reposición P1\"\n    },\n    {\n        \"id\": 2,\n        \"productoId\": 1,\n        \"cantidad\": 20,\n        \"tipoMovimiento\": \"SALIDA_VENTA\",\n        \"fechaHora\": \"2025-05-22T08:03:38.963818\",\n        \"notas\": \"Venta #12345 P1\"\n    },\n    {\n        \"id\": 1,\n        \"productoId\": 1,\n        \"cantidad\": 100,\n        \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n        \"fechaHora\": \"2025-05-17T08:03:38.963818\",\n        \"notas\": \"Stock inicial P1\"\n    }\n]"
+						},
+						{
+							"name": "Get Collection with Access Token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2?access_key={{accessKey}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									],
+									"query": [
+										{
+											"key": "access_key",
+											"value": "{{accessKey}}"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This is a test collection that makes a tiny request to Postman Echo service to get the list of request headers sent by a HTTP client.\",\n            \"_postman_id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.0.0/collection.json\",\n            \"updatedAt\": \"2022-06-16T20:21:13.000Z\",\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"id\": \"82ee981b-e19f-962a-401e-ea34ebfb4848\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                            ],\n                            \"type\": \"text/javascript\"\n                        }\n                    }\n                ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                },\n                \"response\": []\n            }\n        ]\n    }\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/movimientos/9",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"movimientos",
+										"9"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "[] //respuesta vacía"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections",
+										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Registrar movimiento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productoId\": 2,\n    \"cantidad\": 3,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"notas\": \"Compra de prueba para el producto 2\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/movimientos",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"movimientos"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{workspaceId}}",
+									"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n*   `info` — An **object** that contains the following properties:\n    *   `name` — A **string** value that contains the collection's name.\n    *   `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n*   `item` — An **object** that contains the HTTP request and response information.\n    *   `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n*   For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    *   `info` object — Use the `definitions.info` entry.\n    *   `item` object — Use the `definitions.items` entry.\n*   For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.getpostman.com/collections",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"collection\": {\n        \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n        \"name\": \"Test Collection\",\n        \"uid\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n    }\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cantidad\": 3,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"notas\": \"Compra de prueba para el producto 2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/movimientos",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"movimientos"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"productoId\": \"El ID del producto no puede ser nulo\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 2, // producto no existente en BD\n    \"cantidad\": 3,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"notas\": \"Compra de prueba para el producto 2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/movimientos",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"movimientos"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"mensaje\": \"El producto con ID 2 no existe en el catálogo.\",\n    \"timestamp\": \"2025-05-31T19:00:40.5292472\"\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.getpostman.com/collections",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": ""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Registrar entrada",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productoId\": 2,\n    \"cantidad\": 1,\n    \"tipoMovimiento\": \"ENTRADA_DEVOLUCION\",\n    \"notas\": \"Entrada por devolución de mercadería\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/entradas",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"entradas"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{workspaceId}}",
+									"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n*   `info` — An **object** that contains the following properties:\n    *   `name` — A **string** value that contains the collection's name.\n    *   `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n*   `item` — An **object** that contains the HTTP request and response information.\n    *   `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n*   For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    *   `info` object — Use the `definitions.info` entry.\n    *   `item` object — Use the `definitions.items` entry.\n*   For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 3,\n    \"cantidad\": 25,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"notas\": \"Ingreso inicial para el producto ID 3\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/entradas",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"entradas"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 8,\n    \"productoId\": 3,\n    \"cantidad\": 25,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"fechaHora\": \"2025-05-31T19:07:07.0464837\",\n    \"notas\": \"Ingreso inicial para el producto ID 3\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 3,\n    \"cantidad\": 0,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"notas\": \"Ingreso inicial para el producto ID 3\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/entradas",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"entradas"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"cantidad\": \"La cantidad debe ser al menos 1.\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 10,\n    \"cantidad\": 5,\n    \"tipoMovimiento\": \"ENTRADA_COMPRA\",\n    \"notas\": \"Ingreso inicial para el producto ID 3\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/entradas",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"entradas"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"mensaje\": \"El producto con ID 10 no existe en el catálogo.\",\n    \"timestamp\": \"2025-05-31T19:40:53.53561\"\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.getpostman.com/collections",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": ""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Registrar salida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 201\", function () {",
+									"    pm.expect(pm.response.to.have.status(201));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('id');",
+									"    pm.expect(responseData).to.have.property('productoId');",
+									"    pm.expect(responseData).to.have.property('cantidad');",
+									"    pm.expect(responseData).to.have.property('tipoMovimiento');",
+									"    pm.expect(responseData).to.have.property('fechaHora');",
+									"    pm.expect(responseData).to.have.property('notas');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate the response body schema matches the expected format\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.id).to.be.a('number');",
+									"    pm.expect(responseData.productoId).to.be.a('number');",
+									"    pm.expect(responseData.cantidad).to.be.a('number');",
+									"    pm.expect(responseData.tipoMovimiento).to.be.a('string');",
+									"    pm.expect(responseData.fechaHora).to.be.a('string');",
+									"    pm.expect(responseData.notas).to.be.a('string');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Info and item objects are present with expected properties\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.info).to.be.an('object');",
+									"    pm.expect(responseData.info.name).to.be.a('string');",
+									"    pm.expect(responseData.info.schema).to.be.a('string');",
+									"",
+									"    pm.expect(responseData.item).to.be.an('object');",
+									"    pm.expect(responseData.item.request).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productoId\": 1,\n    \"cantidad\": 1,\n    \"tipoMovimiento\": \"SALIDA_VENTA\",\n    \"notas\": \"Venta de producto 1\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/salidas",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"salidas"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{workspaceId}}",
+									"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n*   `info` — An **object** that contains the following properties:\n    *   `name` — A **string** value that contains the collection's name.\n    *   `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n*   `item` — An **object** that contains the HTTP request and response information.\n    *   `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n*   For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    *   `info` object — Use the `definitions.info` entry.\n    *   `item` object — Use the `definitions.items` entry.\n*   For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 1,\n    \"cantidad\": 1,\n    \"tipoMovimiento\": \"SALIDA_VENTA\",\n    \"notas\": \"Venta de producto 1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/salidas",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"salidas"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 7,\n    \"productoId\": 1,\n    \"cantidad\": 1,\n    \"tipoMovimiento\": \"SALIDA_VENTA\",\n    \"fechaHora\": \"2025-05-31T19:44:38.4114951\",\n    \"notas\": \"Venta de producto 1\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": null,\n    \"cantidad\": 0,\n    \n    \"notas\": \"Venta de producto 1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/salidas",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"salidas"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"productoId\": \"El ID del producto no puede ser nulo\",\n    \"tipoMovimiento\": \"El tipo de movimiento no puede ser nulo\",\n    \"cantidad\": \"La cantidad no puede ser nula\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 0,\n    \"cantidad\": 1,\n    \"tipoMovimiento\": \"SALIDA_VENTA\",\n    \"notas\": \"Venta de producto 1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/salidas",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"salidas"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"mensaje\": \"El producto con ID 0 no existe en el catálogo.\",\n    \"timestamp\": \"2025-05-31T19:48:29.8116458\"\n}"
+						},
+						{
+							"name": "Rate Limit Exceeded",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"collection\": {\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.getpostman.com/collections",
+									"protocol": "https",
+									"host": [
+										"api",
+										"getpostman",
+										"com"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": ""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Ajuste de stock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productoId\": 2,\n    \"cantidad\": 77,\n    \"tipoMovimiento\": \"RECUENTO_INVENTARIO\",\n    \"notas\": \"Ajuste de stock por conteo físico fin de mes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8081/api/v1/inventario/ajuste-stock",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"inventario",
+								"ajuste-stock"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{workspaceId}}",
+									"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n*   `info` — An **object** that contains the following properties:\n    *   `name` — A **string** value that contains the collection's name.\n    *   `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n*   `item` — An **object** that contains the HTTP request and response information.\n    *   `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n*   For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    *   `info` object — Use the `definitions.info` entry.\n    *   `item` object — Use the `definitions.items` entry.\n*   For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 4,\n    \"cantidad\": 77,\n    \"tipoMovimiento\": \"RECUENTO_INVENTARIO\",\n    \"notas\": \"Ajuste de stock por conteo físico fin de mes\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/ajuste-stock",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"ajuste-stock"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 8,\n    \"productoId\": 4,\n    \"cantidad\": 77,\n    \"tipoMovimiento\": \"RECUENTO_INVENTARIO\",\n    \"fechaHora\": \"2025-05-31T19:58:36.4273839\",\n    \"notas\": \"Ajuste de stock por conteo físico fin de mes\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 4,\n    \n    \"tipoMovimiento\": \"RECUENTO_INVENTARIO\",\n    \"notas\": \"Ajuste de stock por conteo físico fin de mes\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/ajuste-stock",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"ajuste-stock"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"cantidad\": \"La cantidad no puede ser nula\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"productoId\": 12,\n    \"cantidad\": 77,\n    \"tipoMovimiento\": \"RECUENTO_INVENTARIO\",\n    \"notas\": \"Ajuste de stock por conteo físico fin de mes\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8081/api/v1/inventario/ajuste-stock",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"v1",
+										"inventario",
+										"ajuste-stock"
+									],
+									"query": [
+										{
+											"key": "workspace",
+											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
+											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"mensaje\": \"El producto con ID 2 no existe en el catálogo.\",\n    \"timestamp\": \"2025-05-31T19:52:46.6561313\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://farming-simulator.pstmn.io"
+		}
+	]
+}

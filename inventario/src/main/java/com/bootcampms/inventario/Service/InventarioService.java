@@ -1,4 +1,3 @@
-// D:/SpringProyects/BootCampMS2025/inventario/src/main/java/com/bootcampms/inventario/Service/InventarioService.java
 package com.bootcampms.inventario.Service;
 
 import com.bootcampms.inventario.Model.MovimientoInventario;

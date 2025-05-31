@@ -68,7 +68,7 @@ public class ProductoWebClientService {
         try {
             ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.GET, null, Void.class);
 
-            // Si llegamos aquí, la respuesta fue exitosa (2xx)
+            // Si se llega aquí, la respuesta fue exitosa (2xx)
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.debug("Producto ID: {} validado exitosamente (HTTP {}).", productoId, response.getStatusCode());
                 return true;
@@ -76,7 +76,6 @@ public class ProductoWebClientService {
                 // Este bloque sería inusual si restTemplate.exchange no lanzó una excepción para códigos no-2xx.
                 // Se mantiene por robustez, aunque HttpClientErrorException/HttpServerErrorException deberían cubrir estos casos.
                 log.warn("Producto ID: {} respondió con HTTP {} pero no fue 2xx y no lanzó excepción.", productoId, response.getStatusCode());
-                // Considerar lanzar una excepción genérica aquí si este estado no es esperado y no fue capturado antes.
                 return false;
             }
         } catch (HttpClientErrorException ex) { // Errores 4xx

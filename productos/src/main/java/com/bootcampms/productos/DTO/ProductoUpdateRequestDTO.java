@@ -46,5 +46,5 @@ public class ProductoUpdateRequestDTO {
     @Schema(description = "Nuevo estado del producto en el sistema (BORRADOR, PUBLICADO, PRIVADO).", example = "PUBLICADO", requiredMode = Schema.RequiredMode.REQUIRED)
     private Estado estado;
 
-    // NOTA: No incluimos id, precio, precioOferta, stock ya que no se actualizan por este DTO.
+
 }

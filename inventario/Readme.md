@@ -132,4 +132,6 @@ La documentación detallada del código fuente (Javadoc) ha sido generada para e
     
 ## Test Result
 Se incluye exportaciones de los test result de controllers y services en sus respectivas carpetas dentro de /test
-    
+
+## Colección de Postman (Pública)
+    https://documenter.getpostman.com/view/19130406/2sB2qgeJBM

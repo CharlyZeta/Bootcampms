@@ -11,7 +11,7 @@ import java.util.List; // Para devolver listas de movimientos
  * Proporciona métodos para interactuar con la tabla 'movimientos_inventario' en la base de datos,
  * incluyendo operaciones CRUD básicas y consultas personalizadas para obtener movimientos.
  */
-@Repository // Es buena práctica anotar los repositorios, aunque Spring puede detectarlos
+@Repository
 public interface MovimientoInventarioRepository extends JpaRepository<MovimientoInventario, Long> {
 
     /**

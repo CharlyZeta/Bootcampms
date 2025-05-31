@@ -21,7 +21,7 @@ public class MovimientoInventarioDTO {
     private Long productoId;
 
     @NotNull(message = "La cantidad no puede ser nula")
-    @Min(value = 1, message = "La cantidad debe ser al menos 1.") // Generalmente los movimientos son por cantidades positivas
+    @Min(value = 1, message = "La cantidad debe ser al menos 1.")
     @Schema(description = "Cantidad de unidades afectadas por el movimiento. Debe ser un valor positivo.", example = "10", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidad;
 

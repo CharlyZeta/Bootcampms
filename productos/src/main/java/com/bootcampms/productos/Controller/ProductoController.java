@@ -6,8 +6,6 @@ import com.bootcampms.productos.DTO.ProductoUpdateRequestDTO;
 import com.bootcampms.productos.Exception.GlobalExceptionHandler; // Para referencia en @ApiResponse
 import com.bootcampms.productos.Exception.ProductoConIdAlCrearException;
 import com.bootcampms.productos.Exception.RecursoNoEncontradoException;
-// SkuDuplicadoException no se usa directamente aquí, se lanza desde el servicio
-// import com.bootcampms.productos.Exception.SkuDuplicadoException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
