@@ -27,6 +27,12 @@
             margin-bottom: 30px;
             border-bottom: 2px solid #007bff;
         }
+        .project-header img.logo {
+            display: block; /* Para poder centrar con margin auto si es necesario */
+            margin: 0 auto 15px auto; /* Centra la imagen y añade margen inferior */
+            max-height: 70px; /* Ajusta la altura máxima del logo */
+            width: auto; /* Mantiene la proporción del logo */
+        }
         .project-header h1 {
             margin: 0 0 10px 0;
             font-size: 32px;
@@ -139,6 +145,7 @@
 <body>
     <div class="main-container">
         <div class="project-header">
+            <img src="https://codigofacilito.com/assets/iso-2c915b58698845df3902effd7a958111fef40aab4c8c13db1db519b37fc1b2e8.png" alt="Logo Código Facilito" class="logo">
             <h1>Bootcamp MS - Proyecto Integrador</h1>
             <p>Visión General de los Microservicios Desarrollados</p>
         </div>
@@ -202,8 +209,16 @@
                 <a href="https://gold-capsule-117332.postman.co/workspace/My-Workspace~27c0dbed-2bc4-41e6-8782-4db4c9c2b652/collection/19130406-b68fb0e8-532e-43c7-bf37-99b5fd6fbac2?action=share&creator=19130406" target="_blank">
                     <span class="icon">🚀</span> Ver Colección Pública de Postman
                 </a><br>
-                <small>(Esta colección puede contener pruebas para ambos microservicios. Ajustar si es necesario.)</small>
+                <small>(Esta colección tiene pruebas para ambos microservicios.)</small>
             </p>
+                  <p>
+       <img src="https://cdn.worldvectorlogo.com/logos/docker.svg" alt="Docker Icon" width="24" height="24" style="vertical-align: middle; margin-right: 5px;">
+       Se incluye archivo de configuración para docker-compose.
+       <br>
+       <small>( Descarga el repositorio, si tienes docker instalado ejecuta <strong><code>docker-compose up --build</code></strong> )</small>
+   </p>
+   
+   
         </div>
 
         <div class="footer">

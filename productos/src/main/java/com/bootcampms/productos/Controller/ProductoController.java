@@ -97,6 +97,8 @@ public class ProductoController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = GlobalExceptionHandler.ErrorResponse.class)))
     })
+
+
     @PostMapping
     public ResponseEntity<Producto> crearProducto(
             @Parameter(description = "Objeto Producto a ser creado. El ID debe ser nulo.", required = true,
