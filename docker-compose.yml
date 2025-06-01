@@ -5,11 +5,11 @@ services:
   productos-ms:
     build:
       context: ./productos # Ruta a la carpeta del microservicio de productos
-      dockerfile: Dockerfile # Asume que tienes un Dockerfile en esa carpeta
+      dockerfile: Dockerfile
     ports:
       - "8080:8080" # Mapea puerto_host:puerto_contenedor
     environment:
-      - SPRING_PROFILES_ACTIVE=dev # O el perfil que necesites
+      - SPRING_PROFILES_ACTIVE=dev
     networks:
       - bootcamp-network
     healthcheck: # Opcional: para verificar que el servicio esté listo
@@ -45,16 +45,14 @@ services:
 
   # Servicio de Prometheus
   prometheus:
-    image: prom/prometheus:v2.51.2 # O la versión que prefieras
+    image: prom/prometheus:v2.51.2
     ports:
       - "9090:9090"
     volumes:
-      # Monta tu archivo de configuración de Prometheus
-      # Debes crear este archivo en ./config/prometheus/prometheus.yml
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus' # Directorio de almacenamiento dentro del contenedor
+      - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
     networks:
