@@ -114,6 +114,23 @@ Este microservicio expone los siguientes endpoints principales bajo el path base
 
 Para una descripción detallada de todos los endpoints, parámetros y respuestas, por favor consulta la documentación interactiva de Swagger UI.
 
+## Métricas y Monitoreo (Actuator)
+Spring Boot Actuator está habilitado para exponer información de la aplicación y métricas. Los endpoints de Actuator están disponibles bajo el path base `/management`.
+
+Endpoints principales expuestos (según `application.properties`):
+- **Salud:** `GET /management/health`
+    - Muestra información sobre el estado de salud de la aplicación.
+- **Información:** `GET /management/info`
+    - Muestra información general de la aplicación (configurable).
+- **Métricas (lista):** `GET /management/metrics`
+    - Permite consultar la lista de métricas disponibles.
+- **Métricas (individual):** `GET /management/metrics/{nombreDeLaMetrica}`
+    - Permite consultar el valor de una métrica específica.
+- **Métricas para Prometheus:** `GET /management/prometheus`
+    - Expone todas las métricas disponibles en un formato compatible con Prometheus, ideal para ser recolectado por un servidor Prometheus.
+
+La configuración de los endpoints expuestos se encuentra en `src/main/resources/application.properties` bajo la propiedad `management.endpoints.web.exposure.include`.
+
 ## Prerrequisitos
 
 *   JDK 17 o superior.

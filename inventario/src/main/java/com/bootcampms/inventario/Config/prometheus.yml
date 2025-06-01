@@ -1,0 +1,11 @@
+global:
+  scrape_interval:     15s # Cada cuánto tiempo recolectar métricas.
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'spring-boot-productos' # Nombre del job
+    metrics_path: '/management/prometheus' # Path del endpoint de Actuator
+    static_configs:
+      - targets: ['localhost:8081']
+        labels:
+          application: 'inventario-ms' # Etiqueta para identificar la aplicación
