@@ -1,50 +1,69 @@
 version: '3.8'
 
 services:
-  # Servicio de Productos
-  productos-service:
+  # Microservicio de Productos
+  productos-ms:
     build:
-      context: ./productos
-      dockerfile: Dockerfile
+      context: ./productos # Ruta a la carpeta del microservicio de productos
+      dockerfile: Dockerfile # Asume que tienes un Dockerfile en esa carpeta
     ports:
-      - "8080:8080"
+      - "8080:8080" # Mapea puerto_host:puerto_contenedor
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:productosdb
-      - SPRING_DATASOURCE_USERNAME=sa
-      - SPRING_DATASOURCE_PASSWORD=
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=dev # O el perfil que necesites
     networks:
       - bootcamp-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+    healthcheck: # Opcional: para verificar que el servicio esté listo
+      test: ["CMD", "curl", "-f", "http://localhost:8080/management/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
 
-  # Servicio de Inventario
-  inventario-service:
+  # Microservicio de Inventario
+  inventario-ms:
     build:
-      context: ./inventario
-      dockerfile: Dockerfile
+      context: ./inventario # Ruta a la carpeta del microservicio de inventario
+      dockerfile: Dockerfile # Asume que tienes un Dockerfile en esa carpeta
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:inventariodb
-      - SPRING_DATASOURCE_USERNAME=sa
-      - SPRING_DATASOURCE_PASSWORD=
       - SPRING_PROFILES_ACTIVE=dev
-      - MICROSERVICE_PRODUCTOS_URL=http://productos-service:8080/api/v1/productos
+      # URL para que inventario-ms pueda comunicarse con productos-ms
+      # Usamos el nombre del servicio 'productos-ms' que Docker Compose resolverá
+      - MICROSERVICE_PRODUCTOS_URL=http://productos-ms:8080/api/v1/productos
+    depends_on:
+      productos-ms: # Asegura que productos-ms intente iniciar primero
+        condition: service_healthy # Espera a que el healthcheck de productos-ms pase
     networks:
       - bootcamp-network
-    depends_on:
-      productos-service:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+    healthcheck: # Opcional
+      test: ["CMD", "curl", "-f", "http://localhost:8081/management/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
 
+  # Servicio de Prometheus
+  prometheus:
+    image: prom/prometheus:v2.51.2 # O la versión que prefieras
+    ports:
+      - "9090:9090"
+    volumes:
+      # Monta tu archivo de configuración de Prometheus
+      # Debes crear este archivo en ./config/prometheus/prometheus.yml
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus' # Directorio de almacenamiento dentro del contenedor
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - bootcamp-network
+    depends_on:
+      - productos-ms
+      - inventario-ms
+
+# Definición de la red personalizada
 networks:
   bootcamp-network:
-    driver: bridge 
+    driver: bridge
