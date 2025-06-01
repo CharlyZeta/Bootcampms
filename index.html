@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Bootcamp MS - Visión General</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5; /* Un fondo ligeramente diferente para la página raíz */
+            color: #333;
+        }
+        .main-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .project-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+        }
+        .project-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            color: #007bff;
+        }
+        .project-description {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-left: 5px solid #007bff;
+            border-radius: 4px;
+        }
+        .microservices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .microservice-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .microservice-card h2 {
+            font-size: 24px;
+            color: #343a40;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ced4da;
+            padding-bottom: 10px;
+        }
+        .microservice-card .main-link a {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .microservice-card .main-link a:hover {
+            background-color: #0056b3;
+        }
+        .quick-links-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #495057;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .quick-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .quick-links ul li {
+            margin-bottom: 8px;
+        }
+        .quick-links ul li a {
+            text-decoration: none;
+            color: #0056b3;
+            transition: color 0.2s ease;
+        }
+        .quick-links ul li a:hover {
+            color: #003d80;
+            text-decoration: underline;
+        }
+        .quick-links ul li .icon {
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+        .postman-link-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .postman-link-section a {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d65a00; /* Postman orange */
+            text-decoration: none;
+        }
+        .postman-link-section a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e4e8;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="project-header">
+            <h1>Bootcamp MS - Proyecto Integrador</h1>
+            <p>Visión General de los Microservicios Desarrollados</p>
+        </div>
+
+        <div class="project-description">
+            <p>
+                Este proyecto es el resultado del Bootcamp de Microservicios, donde se han desarrollado
+                dos componentes principales: un microservicio para la gestión de productos y otro para
+                el control de inventario. Ambos servicios exponen APIs RESTful y están documentados
+                para facilitar su uso y prueba.
+            </p>
+            <p>
+                A continuación, encontrarás los accesos a cada microservicio y sus recursos asociados.
+            </p>
+        </div>
+
+        <div class="microservices-grid">
+            <!-- Microservicio de Productos -->
+            <div class="microservice-card">
+                <h2>🛍️ Microservicio de Productos</h2>
+                <p class="main-link">
+                    <a href="./productos/index.html" target="_blank"><span class="icon">🏠</span>Página Principal de Productos</a>
+                </p>
+                <h3 class="quick-links-title">Accesos Rápidos (Productos):</h3>
+                <div class="quick-links">
+                    <ul>
+                        <li><a href="./productos/JDoc/index.html" target="_blank"><span class="icon">📄</span>Javadoc Productos</a></li>
+                        <li>
+                            <a href="http://localhost:8080/swagger-ui.html" target="_blank"><span class="icon">⚙️</span>API Swagger (Productos)</a>
+                            <small>(Requiere MS Productos corriendo en puerto 8080)</small>
+                        </li>
+                        <li><a href="./productos/src/test/java/com/bootcampms/productos/Controller/Test Results - ProductoControllerTest.html" target="_blank"><span class="icon">🧪</span>Tests Controller (Productos)</a></li>
+                        <li><a href="./productos/src/test/java/com/bootcampms/productos/Service/Test Results - ProductoServiceTest.html" target="_blank"><span class="icon">🧪</span>Tests Service (Productos)</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Microservicio de Inventario -->
+            <div class="microservice-card">
+                <h2>📦 Microservicio de Inventario</h2>
+                <p class="main-link">
+                    <a href="./inventario/index.html" target="_blank"><span class="icon">🏠</span>Página Principal de Inventario</a>
+                </p>
+                <h3 class="quick-links-title">Accesos Rápidos (Inventario):</h3>
+                <div class="quick-links">
+                    <ul>
+                        <li><a href="./inventario/JDoc/index.html" target="_blank"><span class="icon">📄</span>Javadoc Inventario</a></li>
+                        <li>
+                            <a href="http://localhost:8081/swagger-ui.html" target="_blank"><span class="icon">⚙️</span>API Swagger (Inventario)</a>
+                            <small>(Requiere MS Inventario corriendo en puerto 8081)</small>
+                        </li>
+                        <li><a href="./inventario/src/test/java/com/bootcampms/inventario/Controller/Test Results - InventarioControllerTest.html" target="_blank"><span class="icon">🧪</span>Tests Controller (Inventario)</a></li>
+                        <li><a href="./inventario/src/test/java/com/bootcampms/inventario/Service/Test Results - InventarioServiceImplTest.html" target="_blank"><span class="icon">🧪</span>Tests Service (Inventario)</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="postman-link-section">
+            <p>
+                <a href="https://gold-capsule-117332.postman.co/workspace/My-Workspace~27c0dbed-2bc4-41e6-8782-4db4c9c2b652/collection/19130406-b68fb0e8-532e-43c7-bf37-99b5fd6fbac2?action=share&creator=19130406" target="_blank">
+                    <span class="icon">🚀</span> Ver Colección Pública de Postman
+                </a><br>
+                <small>(Esta colección puede contener pruebas para ambos microservicios. Ajustar si es necesario.)</small>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>Desarrollado por Gerardo Maidana</p>
+            <p>
+                <a href="https://www.linkedin.com/in/gerardomaidana" target="_blank">LinkedIn: /in/gerardomaidana</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
